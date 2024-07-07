@@ -17,4 +17,6 @@ public interface RoleService {
     ApiResponse<Map<String, String>> createNewRoles(List<String> roles);
 
     ApiResponse<Void> revokeUserRole(String email, String role);
+
+    ApiResponse<List<Role>> getAllRoles(int page, int size, String sort);
 }

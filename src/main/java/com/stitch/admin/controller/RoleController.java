@@ -1,6 +1,7 @@
 package com.stitch.admin.controller;
 
 import com.stitch.admin.model.entity.AdminUser;
+import com.stitch.admin.model.entity.Role;
 import com.stitch.admin.payload.response.ApiResponse;
 import com.stitch.admin.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,14 @@ public class RoleController {
         ApiResponse<Void> response = roleService.revokeUserRole(email, role);
         return new ResponseEntity<>(response,status(response.getCode()));
 
+    }
+
+    @GetMapping("get-all-roles")
+    public ResponseEntity<ApiResponse<List<Role>>> getAllRoles(@RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int size,
+                                                         @RequestParam(defaultValue = "asc") String sort){
+        ApiResponse<List<Role>> response = roleService.getAllRoles(page,size,sort);
+        return new ResponseEntity<>(response,status(response.getCode()));
     }
 
 }
