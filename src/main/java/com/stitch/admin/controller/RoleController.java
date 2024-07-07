@@ -23,8 +23,8 @@ public class RoleController {
     private final RoleService roleService;
 
     @PutMapping("/assign-roles")
-    public ResponseEntity<ApiResponse<AdminUser>> assignRoles(@RequestParam(name = "email") String email,
-                                                              @RequestParam("roles")List<String> roles){
+    public ResponseEntity<ApiResponse<AdminUser>> assignRoles(@RequestParam(name = "roleName") String email,
+                                                              @RequestParam("permissions")List<String> roles){
         ApiResponse<AdminUser> response = roleService.assignRolesToUser(email,roles);
         return new ResponseEntity<>(response,status(response.getCode()));
     }
