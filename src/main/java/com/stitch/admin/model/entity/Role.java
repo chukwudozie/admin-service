@@ -23,4 +23,8 @@ public class Role extends BaseEntity{
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Permission> permissions;
+
+    public Role(String name) {
+        this.name = name;
+    }
 }

@@ -2,6 +2,7 @@ package com.stitch.admin.model.entity;
 
 
 
+import com.stitch.admin.model.enums.IdentityType;
 import jakarta.persistence.*;
 import lombok.Data;
 

@@ -3,6 +3,7 @@ package com.stitch.admin.exceptions;
 
 import com.stitch.admin.exceptions.custom.ApiException;
 import com.stitch.admin.exceptions.custom.RegistrationException;
+import com.stitch.admin.exceptions.custom.UserExistsException;
 import com.stitch.admin.payload.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -35,6 +36,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleApiExceptions(ApiException ex){
         ApiResponse<String> errorDetails = new ApiResponse<>(FAILED, ex.getCode(), ex.getMessage());
         return new ResponseEntity<>(errorDetails, status(ex.getCode()));
+    }
+
+    @ExceptionHandler(UserExistsException.class)
+    public ResponseEntity<ApiResponse<String>> handleUserExistsException(UserExistsException ex){
+        ApiResponse<String> errorDetails = new ApiResponse<>(FAILED, HttpStatus.CONFLICT.value(), ex.getMessage());
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
