@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface AdminAuthService {
 
-    Optional<AdminUser> fetchUserByUserName(String username);
+    Optional<AdminUser> fetchUserByEmail(String email);
 
     ApiResponse<AdminUser> registerUser(RegistrationRequest request, List<String> roles);
     ApiResponse<Map<String,Object>> loginUser(LoginRequest request);

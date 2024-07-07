@@ -8,6 +8,8 @@ public final class Constants {
 
     private Constants(){}
 
+
+    public static final String ADMIN_BASE_URL= "api/v1/admin";
     public static final String AUTH_URL= "api/v1/admin/auth";
 
     public static final String FAILED = "FAILED";
