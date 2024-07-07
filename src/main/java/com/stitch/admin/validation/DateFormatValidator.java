@@ -1,4 +1,4 @@
-package com.stitch.admin;
+package com.stitch.admin.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

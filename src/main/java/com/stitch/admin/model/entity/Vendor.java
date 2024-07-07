@@ -1,7 +1,7 @@
 package com.stitch.admin.model.entity;
 
 
-import com.stitch.user.enums.Tier;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,9 +29,9 @@ public class Vendor extends User{
     @Column(name = "pin_attempts")
     protected Integer pinAttempts = 0;
 
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "tier")
-    private Tier tier = Tier.ONE;
+//    @Enumerated(EnumType.ORDINAL)
+//    @Column(name = "tier")
+//    private Tier tier = Tier.ONE;
 
     @Column(name = "country")
     private String country;

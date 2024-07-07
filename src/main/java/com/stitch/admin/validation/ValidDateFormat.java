@@ -1,6 +1,5 @@
-package com.stitch.admin;
+package com.stitch.admin.validation;
 
-import jakarta.persistence.Table;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import jakarta.validation.ReportAsSingleViolation;

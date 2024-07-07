@@ -1,5 +1,6 @@
 package com.stitch.admin.payload.request;
 
+import com.stitch.admin.validation.ValidPassword;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
@@ -16,6 +17,7 @@ public class RegistrationRequest {
     @NotBlank(message = "Email is required")
     private String email;
     @NotBlank(message = "Password is required")
+    @ValidPassword
     private String password;
     @NotBlank(message = "first Name is required")
     @Size(min = 3, message = "First Name must be at least 3 characters")
