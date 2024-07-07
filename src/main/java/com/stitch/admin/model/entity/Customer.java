@@ -1,7 +1,7 @@
 package com.stitch.admin.model.entity;
 
 
-import com.stitch.user.enums.Tier;
+
 import jakarta.persistence.*;
 import lombok.Data;
 

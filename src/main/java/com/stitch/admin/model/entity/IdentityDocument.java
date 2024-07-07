@@ -1,8 +1,7 @@
 package com.stitch.admin.model.entity;
 
 
-import com.stitch.commons.model.entity.BaseEntity;
-import com.stitch.user.enums.IdentityType;
+
 import jakarta.persistence.*;
 import lombok.Data;
 

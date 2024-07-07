@@ -1,7 +1,6 @@
 package com.stitch.admin.model.entity;
 
-import com.stitch.commons.model.entity.BaseEntity;
-import com.stitch.user.model.dto.DeviceDto;
+import com.stitch.admin.model.dto.DeviceDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

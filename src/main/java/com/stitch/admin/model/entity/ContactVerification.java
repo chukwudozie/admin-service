@@ -1,6 +1,6 @@
 package com.stitch.admin.model.entity;
 
-import com.stitch.commons.model.entity.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

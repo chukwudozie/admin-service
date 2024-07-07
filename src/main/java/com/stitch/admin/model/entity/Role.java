@@ -16,16 +16,11 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "admin_user")
-public class AdminUser extends User{
-    private boolean activated;
-    private String department;
-    private String grade;
-    private double salary;
-    private String image;
-    private String dateOfBirth;
-    private int age;
-    private String city;
+@Table(name = "admin_role")
+public class Role extends BaseEntity{
+
+    private String name;
+
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Role> roles;
+    private Set<Permission> permissions;
 }
