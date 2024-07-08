@@ -43,6 +43,13 @@ public class SeedUser implements CommandLineRunner {
     }
 
     private Set<Role> createAdminRoles (Set<String> roles){
+        roles.forEach(role -> {
+            if(roleRepository.existsByNameIgnoreCase(role)){
+
+            }
+            Role newRole = new Role(role);
+
+        });
         return new HashSet<>();
     }
 }
