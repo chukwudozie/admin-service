@@ -13,6 +13,7 @@ import com.stitch.admin.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -26,6 +27,8 @@ import static com.stitch.admin.utils.Constants.SUCCESS;
 @RequiredArgsConstructor
 @Slf4j
 public class AdminAuthServiceImpl implements AdminAuthService {
+
+    private final BCryptPasswordEncoder passwordEncoder;
 
     private final AdminUserRepository adminUserRepository;
     private final RoleService roleService;
@@ -46,6 +49,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             adminUser.setAge(age);
             adminUser.setEnabled(true);
             adminUser.setActivated(true);
+            adminUser.setPassword(passwordEncoder.encode(request.getPassword()));
             Set<String> roleNames = new HashSet<>();
             Set<Role> userRoles = new HashSet<>();
             roles.forEach(rol -> {

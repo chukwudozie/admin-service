@@ -3,6 +3,7 @@ package com.stitch.admin.service.impl;
 import com.stitch.admin.exceptions.custom.ApiException;
 import com.stitch.admin.model.entity.AdminUser;
 import com.stitch.admin.model.entity.Role;
+import com.stitch.admin.model.enums.Roles;
 import com.stitch.admin.payload.response.ApiResponse;
 import com.stitch.admin.repository.AdminUserRepository;
 import com.stitch.admin.repository.RoleRepository;
