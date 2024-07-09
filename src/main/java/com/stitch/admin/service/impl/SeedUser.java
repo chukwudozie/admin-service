@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -41,19 +42,22 @@ public class SeedUser implements CommandLineRunner {
 
     }
 
-    private void createSuperAdmin(){
+    @Transactional
+    public void createSuperAdmin(){
 
         try {
-
             String superAdminName = Roles.SUPER_ADMIN.name();
             if(userRepository.findAdminUserByEmailAddress(email).isPresent()){
                 log.info("SUPER ADMIN ALREADY EXISTS");
                 return;
             }
+            if(roleRepository.existsByNameIgnoreCase(superAdminName)
+                    && userRepository.existsByRolesContains(roleRepository.findByNameIgnoreCase(superAdminName).orElseThrow())){
+                    log.info("SUPER ADMIN ALREADY EXISTS");
+                    return;
 
-            if (userRepository.existsByRolesContains(new Role(superAdminName))){
-                log.info("SUPER ADMIN ALREADY EXISTS");
             }
+
 
             AdminUser superAdmin = new AdminUser();
             superAdmin.setPassword(passwordEncoder.encode(password));
@@ -63,9 +67,14 @@ public class SeedUser implements CommandLineRunner {
             superAdmin.setEnabled(true);
             superAdmin.setActivated(true);
             Set<String> adminRoles = Set.of(superAdminName);
+            log.info("Set of roles ==> {}",adminRoles);
             Set<String> adminPermissions = getAllPermissionNames();
+            log.info("set of permissions ==> {}",adminPermissions);
             Set<Role> roles = createAdminRoles(adminRoles,adminPermissions);
             superAdmin.setRoles(roles);
+            superAdmin.setFirstName("");
+            superAdmin.setLastName("");
+            superAdmin.setPhoneNumber("0811111111");
             AdminUser savedUser = userRepository.save(superAdmin);
             log.info("Saved User == > {}",savedUser);
 
@@ -80,35 +89,39 @@ public class SeedUser implements CommandLineRunner {
         Set<Role> userRoles = new HashSet<>();
         Set<String> roleNames = new HashSet<>();
         roles.forEach(role -> {
-            Role newRole;
-            if(roleNames.contains(role)){
-                return;
-            }
-            Set<Permission> createdPermissions = createPermissions(permissions);
-            if(roleRepository.existsByNameIgnoreCase(role)){
-                newRole = roleRepository.findByNameIgnoreCase(role).get();
-                Set<Permission> existingPermissions = newRole.getPermissions();
-                if (Objects.isNull(existingPermissions) || existingPermissions.isEmpty()){
-                    newRole.setPermissions(createdPermissions);
+            try {
+                Role newRole;
+                if(roleNames.contains(role)){
+                    return;
+                }
+                Set<Permission> createdPermissions = createPermissions(permissions);
+                if(roleRepository.existsByNameIgnoreCase(role)){
+                    newRole = roleRepository.findByNameIgnoreCase(role).get();
+                    Set<Permission> existingPermissions = newRole.getPermissions();
+                    if (Objects.isNull(existingPermissions) || existingPermissions.isEmpty()){
+                        newRole.setPermissions(createdPermissions);
+                    }else{
+                        createdPermissions.forEach(permission -> {
+                            if(!existingPermissions.contains(permission)){
+                                existingPermissions.add(permission);
+                            }
+                        });
+                        newRole.setPermissions(existingPermissions);
+                    }
                     newRole.setLastUpdated(Instant.now());
                 }else{
-                    createdPermissions.forEach(permission -> {
-                        if(!existingPermissions.contains(permission)){
-                            existingPermissions.add(permission);
-                        }
-                    });
-                    newRole.setPermissions(existingPermissions);
+                    newRole = new Role(role);
+                    newRole.setDateCreated(Instant.now());
+                    newRole.setPermissions(createdPermissions);
+
                 }
                 newRole = roleRepository.save(newRole);
-            }else{
-                var createdRole = new Role(role);
-                createdRole.setDateCreated(Instant.now());
-                newRole = roleRepository.save(createdRole);
-                newRole.setPermissions(createdPermissions);
-
+                userRoles.add(newRole);
+                roleNames.add(role);
+            }catch (Exception e){
+                log.error("Exception creating role ==> {}::{}",role,e.getMessage());
             }
-            userRoles.add(newRole);
-            roleNames.add(role);
+
         });
         return userRoles;
     }

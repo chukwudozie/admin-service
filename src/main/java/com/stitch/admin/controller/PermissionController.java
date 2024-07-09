@@ -23,7 +23,7 @@ public class PermissionController {
     private final PermissionService permissionService;
 
 
-    @PutMapping("/assign-roles")
+    @PutMapping("/assign-permissions")
     public ResponseEntity<ApiResponse<AdminUser>> assignRoles(@RequestParam(name = "role") String roleName,
                                                               @RequestParam(name = "permissions") List<String> permissions){
         ApiResponse<AdminUser> response = permissionService.assignPermissionsToRole(roleName, permissions);

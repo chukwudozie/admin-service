@@ -1,14 +1,9 @@
 package com.stitch.admin.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -17,13 +12,19 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString
 @Table(name = "admin_role")
 public class Role extends BaseEntity{
 
     private String name;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Permission> permissions;
+    @JoinTable(
+            name = "role_permission",
+            joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id", referencedColumnName = "id")
+    )
+    private Set<Permission> permissions = new HashSet<>();
 
     public Role(String name) {
         this.name = name;

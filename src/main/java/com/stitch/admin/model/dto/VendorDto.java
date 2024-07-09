@@ -1,6 +1,6 @@
 package com.stitch.admin.model.dto;
 
-import com.stitch.user.model.entity.Vendor;
+import com.stitch.admin.model.entity.Vendor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
