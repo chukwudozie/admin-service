@@ -3,16 +3,23 @@ package com.stitch.admin.service.impl;
 import com.stitch.admin.exceptions.custom.ApiException;
 import com.stitch.admin.exceptions.custom.UserExistsException;
 import com.stitch.admin.model.entity.AdminUser;
+import com.stitch.admin.model.entity.Permission;
 import com.stitch.admin.model.entity.Role;
 import com.stitch.admin.payload.request.LoginRequest;
 import com.stitch.admin.payload.request.RegistrationRequest;
 import com.stitch.admin.payload.response.ApiResponse;
 import com.stitch.admin.repository.AdminUserRepository;
+import com.stitch.admin.security.JwtTokenUtils;
 import com.stitch.admin.service.AdminAuthService;
 import com.stitch.admin.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +27,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static com.stitch.admin.utils.Constants.FAILED;
 import static com.stitch.admin.utils.Constants.SUCCESS;
 
 @Service
@@ -32,13 +41,15 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     private final AdminUserRepository adminUserRepository;
     private final RoleService roleService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtils jwtTokenUtils;
     @Override
     public Optional<AdminUser> fetchUserByEmail(String email) {
         return adminUserRepository.findAdminUserByEmailAddress(email);
     }
 
     @Override
-    public ApiResponse<AdminUser> registerUser(RegistrationRequest request, List<String> roles) {
+    public ApiResponse<AdminUser> registerUser(RegistrationRequest request, String role) {
         validateUser(request);
 
         AdminUser adminUser = new AdminUser();
@@ -50,16 +61,11 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             adminUser.setEnabled(true);
             adminUser.setActivated(true);
             adminUser.setPassword(passwordEncoder.encode(request.getPassword()));
-            Set<String> roleNames = new HashSet<>();
             Set<Role> userRoles = new HashSet<>();
-            roles.forEach(rol -> {
-                Optional<Role> role = roleService.createRole(rol);
-                role.ifPresent(r ->{
-                    if(roleNames.contains(r.getName())){
-                        userRoles.add(r);
-                        roleNames.add(r.getName());
-                    }});
-            });
+            if(Objects.nonNull(role) && !role.isEmpty()){
+                Optional<Role> newRole = roleService.createRole(role);
+                newRole.ifPresent(userRoles::add);
+            }
             adminUser.setRoles(userRoles);
             adminUser.setDateCreated(Instant.now());
 
@@ -80,7 +86,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     }
 
     private void validateUser(RegistrationRequest request) {
-        if(adminUserRepository.findAdminUserByEmailAddress(request.getEmail()).isPresent()){
+        if(adminUserRepository.findAdminUserByEmailAddress(request.getEmailAddress()).isPresent()){
             throw new UserExistsException("Email Already Exists");
         }
         if (adminUserRepository.findAdminUserByPhoneNumber(request.getPhoneNumber()).isPresent()){
@@ -91,6 +97,45 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     @Override
     public ApiResponse<Map<String, Object>> loginUser(LoginRequest request) {
-        return null;
+        UsernamePasswordAuthenticationToken auth;
+        try {
+            auth = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+            Authentication authentication = authenticationManager.authenticate(auth);
+            Map<String, Object> tokens = new HashMap<>();
+            if(authentication.isAuthenticated()){
+                User user = (User) authentication.getPrincipal();
+
+                List<String> roles = user.getAuthorities().stream().map(
+                        GrantedAuthority::getAuthority
+                ).toList();
+                System.err.println("initial roes" +roles);
+                AdminUser adminUser = adminUserRepository.findAdminUserByEmailAddress(request.getEmail())
+                        .orElseThrow(() -> new ApiException("User not found with email",400));
+                List<String> roleList = adminUser.getRoles().stream()
+                        .map(Role::getName)
+                        .collect(Collectors.toList());
+                List<String> permissionList = adminUser.getRoles().stream()
+                        .flatMap(role -> role.getPermissions().stream())
+                        .map(Permission::getName)
+                        .collect(Collectors.toList());
+                System.err.println("role list ="+roleList);
+                System.err.println("permission list =="+permissionList);
+                String accessToken = jwtTokenUtils.generateJwtToken(request.getEmail(),roleList,permissionList);
+                String refreshToken = jwtTokenUtils.generateJwtRefreshToken(request.getEmail(),roleList, permissionList);
+
+                tokens.put("access_token",accessToken);
+                tokens.put("refresh_token",refreshToken);
+                tokens.put("roles",roleList);
+                tokens.put("permissions",permissionList);
+                return new ApiResponse<>(SUCCESS,200,"login successful",tokens);
+            }else {
+                return new ApiResponse<>(FAILED,401,"Not authenticated, check credentials");
+            }
+
+        }catch (Exception e){
+            log.error("Exception occurred during user login ==> {}",e.getMessage());
+            return new ApiResponse<>(FAILED,401,e.getMessage());
+
+        }
     }
 }

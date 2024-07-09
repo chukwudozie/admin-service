@@ -35,7 +35,7 @@ public class SeedUser implements CommandLineRunner {
     private static final String password = "P@sswd2024";
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
         createSuperAdmin();
 

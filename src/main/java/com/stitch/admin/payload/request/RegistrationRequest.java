@@ -15,10 +15,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegistrationRequest {
-//    @NotBlank(message = "Username is required")
-//    private String username;
+
     @NotBlank(message = "Email is required")
-    private String email;
+    private String emailAddress;
     @NotBlank(message = "Password is required")
     @ValidPassword
     private String password;

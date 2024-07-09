@@ -13,7 +13,7 @@ public interface AdminAuthService {
 
     Optional<AdminUser> fetchUserByEmail(String email);
 
-    ApiResponse<AdminUser> registerUser(RegistrationRequest request, List<String> roles);
+    ApiResponse<AdminUser> registerUser(RegistrationRequest request, String role);
     ApiResponse<Map<String,Object>> loginUser(LoginRequest request);
 
 }

@@ -30,7 +30,7 @@ public class CustomAuthorizationFilter  extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("request path : {}",request.getServletPath());
-        if(request.getServletPath().startsWith("/api/v1/admin/auth")){
+        if(request.getServletPath().startsWith("/api/v1/admin/auth/login")){
             filterChain.doFilter(request,response);
         }else {
             String jwtToken = request.getHeader("Authorization");

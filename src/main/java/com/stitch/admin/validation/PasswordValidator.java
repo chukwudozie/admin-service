@@ -18,7 +18,8 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
         if (password == null){
             return false;
         }
-        String passwordPattern = "^(?=.[0-9])(?=.[a-z])(?=.[A-Z])(?=.[@#$%^&+=])(?=\\S+$).{10,}$";
+
+        String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{10,}$";
         return password.matches(passwordPattern);
 
     }

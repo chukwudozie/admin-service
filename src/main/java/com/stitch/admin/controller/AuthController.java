@@ -8,6 +8,7 @@ import com.stitch.admin.service.AdminAuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,15 +24,17 @@ public class AuthController {
 
     private final AdminAuthService authService;
 
-    @PostMapping("register")
+    @PostMapping("/register")
+    @PreAuthorize("hasAuthority('PERM_CREATE_ROLE')")
     public ResponseEntity<ApiResponse<AdminUser>> registerUser(@Valid @RequestBody RegistrationRequest request,
-                                   @RequestParam(required = false, defaultValue = "DEFAULT")List<String>roles){
-        ApiResponse<AdminUser> response = authService.registerUser(request,roles);
+                                   @RequestParam(required = false, defaultValue = "DEFAULT_ADMIN")String role){
+        ApiResponse<AdminUser> response = authService.registerUser(request,role);
         return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<Map<String,Object>>> loginUser(@RequestBody LoginRequest request){
+        System.err.println("i came inside");
         ApiResponse<Map<String,Object>> token = authService.loginUser(request);
         return new ResponseEntity<>(token,status(token.getCode()));
     }
