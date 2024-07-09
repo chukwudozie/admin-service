@@ -1,6 +1,7 @@
 package com.stitch.admin.repository;
 
 import com.stitch.admin.model.entity.AdminUser;
+import com.stitch.admin.model.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +12,6 @@ public interface AdminUserRepository  extends JpaRepository<AdminUser, Long> {
 
     Optional<AdminUser> findAdminUserByEmailAddress(String email);
     Optional<AdminUser> findAdminUserByPhoneNumber(String phoneNumber);
+
+    boolean existsByRolesContains(Role role);
 }
