@@ -22,4 +22,10 @@ public class UserManagementController {
     //get all orders pending
     // get all orders completed
     //get all transactions completed
+    //get all admins
+    //disable admins
+    //enable admins
+    //disable vendors or customers\
+    //get a particuler user (get a vendor, get a customer)
+
 }

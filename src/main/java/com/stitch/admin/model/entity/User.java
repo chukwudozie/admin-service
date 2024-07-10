@@ -1,6 +1,7 @@
 package com.stitch.admin.model.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.*;
@@ -11,7 +12,7 @@ import java.time.Instant;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = {"password"})
 @MappedSuperclass
 public abstract class User extends BaseEntity {
 
@@ -32,6 +33,7 @@ public abstract class User extends BaseEntity {
     protected String phoneNumber;
 
     @Column(name = "password")
+    @JsonIgnore
     protected String password;
 
     @Column(name = "last_login")

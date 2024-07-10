@@ -2,6 +2,7 @@ package com.stitch.admin.payload.response;
 
 import lombok.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -20,5 +21,6 @@ public class ApiResponse <T> {
         this.status = status;
         this.code = code;
         this.message = message;
+        this.data = (T) new HashMap<String,String>();
     }
 }

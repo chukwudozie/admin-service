@@ -1,6 +1,7 @@
 package com.stitch.admin.service.impl;
 
 import com.stitch.admin.exceptions.custom.ApiException;
+import com.stitch.admin.exceptions.custom.ResourceNotFoundException;
 import com.stitch.admin.model.entity.AdminUser;
 import com.stitch.admin.model.entity.Permission;
 import com.stitch.admin.model.entity.Role;
@@ -65,7 +66,7 @@ public class RoleServiceImpl implements RoleService {
             throw new ApiException("At least one role is required to be assigned",400);
         }
         AdminUser user = userRepository.findAdminUserByEmailAddress(email)
-                .orElseThrow(() -> new UsernameNotFoundException("No user exists with email "+email));
+                .orElseThrow(() -> new ResourceNotFoundException("No user exists with email "+email));
 
         Set<Role> userRoles = user.getRoles();
         Set<Role> newRoles = new HashSet<>();

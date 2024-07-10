@@ -3,6 +3,7 @@ package com.stitch.admin.exceptions;
 
 import com.stitch.admin.exceptions.custom.ApiException;
 import com.stitch.admin.exceptions.custom.RegistrationException;
+import com.stitch.admin.exceptions.custom.ResourceNotFoundException;
 import com.stitch.admin.exceptions.custom.UserExistsException;
 import com.stitch.admin.payload.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleUserExistsException(UserExistsException ex){
         ApiResponse<String> errorDetails = new ApiResponse<>(FAILED, HttpStatus.CONFLICT.value(), ex.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse<String>> handleResourceNotFoundException(ResourceNotFoundException ex){
+        ApiResponse<String> errorDetails = new ApiResponse<>(FAILED, HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

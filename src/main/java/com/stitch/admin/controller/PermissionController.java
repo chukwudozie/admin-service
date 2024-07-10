@@ -1,6 +1,7 @@
 package com.stitch.admin.controller;
 
 import com.stitch.admin.model.entity.AdminUser;
+import com.stitch.admin.model.entity.Role;
 import com.stitch.admin.payload.response.ApiResponse;
 import com.stitch.admin.service.PermissionService;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +25,9 @@ public class PermissionController {
 
 
     @PutMapping("/assign-permissions")
-    public ResponseEntity<ApiResponse<AdminUser>> assignRoles(@RequestParam(name = "role") String roleName,
-                                                              @RequestParam(name = "permissions") List<String> permissions){
-        ApiResponse<AdminUser> response = permissionService.assignPermissionsToRole(roleName, permissions);
+    public ResponseEntity<ApiResponse<Role>> assignRoles(@RequestParam(name = "role") String roleName,
+                                                         @RequestParam(name = "permissions") List<String> permissions){
+        ApiResponse<Role> response = permissionService.assignPermissionsToRole(roleName, permissions);
         return new ResponseEntity<>(response,status(response.getCode()));
     }
 }
