@@ -9,6 +9,7 @@ import com.stitch.admin.payload.request.LoginRequest;
 import com.stitch.admin.payload.request.RegistrationRequest;
 import com.stitch.admin.payload.response.ApiResponse;
 import com.stitch.admin.repository.AdminUserRepository;
+import com.stitch.admin.repository.RoleRepository;
 import com.stitch.admin.security.JwtTokenUtils;
 import com.stitch.admin.service.AdminAuthService;
 import com.stitch.admin.service.RoleService;
@@ -43,13 +44,14 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     private final RoleService roleService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtils jwtTokenUtils;
+    private final RoleRepository roleRepository;
     @Override
     public Optional<AdminUser> fetchUserByEmail(String email) {
         return adminUserRepository.findAdminUserByEmailAddress(email);
     }
 
     @Override
-    public ApiResponse<AdminUser> registerUser(RegistrationRequest request, String role) {
+    public ApiResponse<AdminUser> registerUser(RegistrationRequest request, String role, String permission) {
         validateUser(request);
 
         AdminUser adminUser = new AdminUser();
@@ -64,7 +66,20 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             Set<Role> userRoles = new HashSet<>();
             if(Objects.nonNull(role) && !role.isEmpty()){
                 Optional<Role> newRole = roleService.createRole(role);
-                newRole.ifPresent(userRoles::add);
+                newRole.ifPresent(r ->{
+                    Optional<Permission> optionalPermission = roleService.createDefaultPermission(permission);
+                    optionalPermission.ifPresent(p ->{
+                        if(!roleRepository.existsByPermissionsContains(p)){
+                            Set<Permission> userPerm = r.getPermissions();
+                            if(Objects.isNull(userPerm))
+                                userPerm = new HashSet<>();
+                            userPerm.add(p);
+                            roleRepository.save(r);
+                        }
+                    });
+
+                    userRoles.add(r);
+                });
             }
             adminUser.setRoles(userRoles);
             adminUser.setDateCreated(Instant.now());

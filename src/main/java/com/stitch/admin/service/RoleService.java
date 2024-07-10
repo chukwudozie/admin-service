@@ -1,6 +1,7 @@
 package com.stitch.admin.service;
 
 import com.stitch.admin.model.entity.AdminUser;
+import com.stitch.admin.model.entity.Permission;
 import com.stitch.admin.model.entity.Role;
 import com.stitch.admin.payload.response.ApiResponse;
 
@@ -19,4 +20,5 @@ public interface RoleService {
     ApiResponse<Void> revokeUserRole(String email, String role);
 
     ApiResponse<List<Role>> getAllRoles(int page, int size, String sort);
+    Optional<Permission> createDefaultPermission(String name);
 }

@@ -25,10 +25,11 @@ public class AuthController {
     private final AdminAuthService authService;
 
     @PostMapping("/register")
-    @PreAuthorize("hasAuthority('PERM_CREATE_ROLE')")
+    @PreAuthorize("hasAuthority('PERM_CREATE_ADMIN')")
     public ResponseEntity<ApiResponse<AdminUser>> registerUser(@Valid @RequestBody RegistrationRequest request,
-                                   @RequestParam(required = false, defaultValue = "DEFAULT_ADMIN")String role){
-        ApiResponse<AdminUser> response = authService.registerUser(request,role);
+                                   @RequestParam(required = false, defaultValue = "DEFAULT_ADMIN")String role,
+                                   @RequestParam(required = false, defaultValue = "PERM_DEFAULT") String permission){
+        ApiResponse<AdminUser> response = authService.registerUser(request,role, permission);
         return new ResponseEntity<>(response, status(response.getCode()));
     }
 

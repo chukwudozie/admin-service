@@ -1,5 +1,6 @@
 package com.stitch.admin.repository;
 
+import com.stitch.admin.model.entity.Permission;
 import com.stitch.admin.model.entity.Role;
 import jakarta.annotation.Nonnull;
 import org.springframework.data.domain.Page;
@@ -15,5 +16,5 @@ public interface RoleRepository extends JpaRepository<Role,Long> {
     Optional<Role> findByNameIgnoreCase(String name);
     boolean existsByNameIgnoreCase(String name);
 
-    Page<Role> findAll (@Nonnull Pageable pageable);
+    boolean existsByPermissionsContains(Permission permission);
 }

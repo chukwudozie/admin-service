@@ -5,7 +5,6 @@ import com.stitch.admin.payload.request.LoginRequest;
 import com.stitch.admin.payload.request.RegistrationRequest;
 import com.stitch.admin.payload.response.ApiResponse;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -13,7 +12,7 @@ public interface AdminAuthService {
 
     Optional<AdminUser> fetchUserByEmail(String email);
 
-    ApiResponse<AdminUser> registerUser(RegistrationRequest request, String role);
+    ApiResponse<AdminUser> registerUser(RegistrationRequest request, String role, String permission);
     ApiResponse<Map<String,Object>> loginUser(LoginRequest request);
 
 }

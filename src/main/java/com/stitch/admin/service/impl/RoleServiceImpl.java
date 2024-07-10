@@ -2,10 +2,12 @@ package com.stitch.admin.service.impl;
 
 import com.stitch.admin.exceptions.custom.ApiException;
 import com.stitch.admin.model.entity.AdminUser;
+import com.stitch.admin.model.entity.Permission;
 import com.stitch.admin.model.entity.Role;
 import com.stitch.admin.model.enums.Roles;
 import com.stitch.admin.payload.response.ApiResponse;
 import com.stitch.admin.repository.AdminUserRepository;
+import com.stitch.admin.repository.PermissionRepository;
 import com.stitch.admin.repository.RoleRepository;
 import com.stitch.admin.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
     private final AdminUserRepository userRepository;
+    private final PermissionRepository permissionRepository;
 
     @Override
     public Optional<Role> createRole(String roleName) {
@@ -38,6 +41,7 @@ public class RoleServiceImpl implements RoleService {
             return optionalRole;
         }else {
             Role newRole = new Role(roleName);
+            newRole.setDateCreated(Instant.now());
             return Optional.of(roleRepository.save(newRole));
         }
     }
@@ -45,6 +49,21 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public ApiResponse<AdminUser> assignRolesToUser(String email, List<String> roles) {
         return null;
+    }
+
+    @Override
+    public Optional<Permission> createDefaultPermission(String name){
+        if (Objects.isNull(name) || name.isEmpty())
+            return Optional.empty();
+        Optional<Permission> optionalPermission = permissionRepository.findByNameIgnoreCase(name);
+        if (optionalPermission.isPresent())
+            return optionalPermission;
+        else {
+            Permission permission = new Permission(name);
+            permission.setDateCreated(Instant.now());
+            return Optional.of(permissionRepository.save(permission));
+        }
+
     }
 
     @Override
