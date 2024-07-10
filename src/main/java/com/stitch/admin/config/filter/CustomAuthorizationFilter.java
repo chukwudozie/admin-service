@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Slf4j
 public class CustomAuthorizationFilter  extends OncePerRequestFilter {
@@ -59,6 +60,8 @@ public class CustomAuthorizationFilter  extends OncePerRequestFilter {
     private void writeError(String message, HttpServletResponse response) throws IOException {
         log.error("Error in auth Filter ==> {}", message);
         response.setStatus(FORBIDDEN.value());
+        if(message.contains("expired") || message.contains("credentials"))
+            response.setStatus(UNAUTHORIZED.value());
         response.setContentType("application/json");
         Map<String,String> error = new HashMap<>();
         error.put("error_message",message);

@@ -15,4 +15,5 @@ public interface AdminAuthService {
     ApiResponse<AdminUser> registerUser(RegistrationRequest request, String role, String permission);
     ApiResponse<Map<String,Object>> loginUser(LoginRequest request);
 
+    ApiResponse<Map<String, Object>> refreshToken(String refreshToken);
 }

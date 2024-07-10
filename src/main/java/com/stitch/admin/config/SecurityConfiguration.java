@@ -32,7 +32,7 @@ public class SecurityConfiguration {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/v1/admin/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/admin/auth/login","/api/v1/admin/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/admin/auth/login","/api/v1/admin/auth/register", "/api/v1/admin/auth/refresh-token").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new CustomAuthorizationFilter(algorithm), UsernamePasswordAuthenticationFilter.class)
                 .build();

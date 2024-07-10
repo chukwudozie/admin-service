@@ -7,6 +7,7 @@ import com.stitch.admin.payload.response.ApiResponse;
 import com.stitch.admin.service.AdminAuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import static com.stitch.admin.utils.Constants.status;
 @RestController
 @RequestMapping(AUTH_URL)
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AdminAuthService authService;
@@ -29,15 +31,24 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AdminUser>> registerUser(@Valid @RequestBody RegistrationRequest request,
                                    @RequestParam(required = false, defaultValue = "DEFAULT_ADMIN")String role,
                                    @RequestParam(required = false, defaultValue = "PERM_DEFAULT") String permission){
+        log.info("Admin Registration request ==> {}",request);
         ApiResponse<AdminUser> response = authService.registerUser(request,role, permission);
         return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<Map<String,Object>>> loginUser(@RequestBody LoginRequest request){
-        System.err.println("i came inside");
+        log.info("Login Request ==> {}",request);
         ApiResponse<Map<String,Object>> token = authService.loginUser(request);
         return new ResponseEntity<>(token,status(token.getCode()));
     }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ApiResponse<Map<String,Object>>> refreshAccessToken(@RequestHeader(name = "Authorization") String refreshToken){
+        ApiResponse<Map<String,Object>> response = authService.refreshToken(refreshToken);
+        return new ResponseEntity<>(response,status(response.getCode()));
+    }
+
+
 
 }

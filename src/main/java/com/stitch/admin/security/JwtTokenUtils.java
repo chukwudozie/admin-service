@@ -45,11 +45,11 @@ public class JwtTokenUtils {
 
     }
 
-    private String extractUsernameFromToken(String token){
+    public String extractUsernameFromToken(String token){
         return JWT.decode(token).getSubject();
     }
 
-    private boolean validateToken(String token){
+    public boolean validateToken(String token){
         try{
             JWTVerifier verifier = JWT.require(algorithm).build();
             verifier.verify(token);

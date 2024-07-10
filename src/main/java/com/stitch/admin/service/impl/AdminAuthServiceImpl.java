@@ -123,7 +123,6 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                 List<String> roles = user.getAuthorities().stream().map(
                         GrantedAuthority::getAuthority
                 ).toList();
-                System.err.println("initial roes" +roles);
                 AdminUser adminUser = adminUserRepository.findAdminUserByEmailAddress(request.getEmail())
                         .orElseThrow(() -> new ApiException("User not found with email",400));
                 List<String> roleList = adminUser.getRoles().stream()
@@ -133,8 +132,6 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                         .flatMap(role -> role.getPermissions().stream())
                         .map(Permission::getName)
                         .collect(Collectors.toList());
-                System.err.println("role list ="+roleList);
-                System.err.println("permission list =="+permissionList);
                 String accessToken = jwtTokenUtils.generateJwtToken(request.getEmail(),roleList,permissionList);
                 String refreshToken = jwtTokenUtils.generateJwtRefreshToken(request.getEmail(),roleList, permissionList);
 
@@ -152,5 +149,42 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             return new ApiResponse<>(FAILED,401,e.getMessage());
 
         }
+    }
+
+    @Override
+    public ApiResponse<Map<String, Object>> refreshToken(String refreshToken) {
+        if(Objects.isNull(refreshToken) || refreshToken.trim().isEmpty() || !refreshToken.startsWith("Bearer ")){
+            throw new ApiException("refresh token required as header must begin with Bearer ",417);
+        }
+
+        refreshToken = refreshToken.substring(7);
+
+        boolean isTokenValid = jwtTokenUtils.validateToken(refreshToken);
+
+        if(isTokenValid){
+            String validEmail = jwtTokenUtils.extractUsernameFromToken(refreshToken);
+            AdminUser adminUser = adminUserRepository.findAdminUserByEmailAddress(validEmail)
+                    .orElseThrow(() -> new ApiException("User not found with email",400));
+            List<String> roleList = adminUser.getRoles().stream()
+                    .map(Role::getName)
+                    .collect(Collectors.toList());
+            List<String> permissionList = adminUser.getRoles().stream()
+                    .flatMap(role -> role.getPermissions().stream())
+                    .map(Permission::getName)
+                    .collect(Collectors.toList());
+            String newAccessToken = jwtTokenUtils.generateJwtToken(validEmail,roleList,permissionList);
+            String newRefreshToken = jwtTokenUtils.generateJwtRefreshToken(validEmail,roleList,permissionList);
+            Map<String, Object> tokens = new HashMap<>();
+
+            tokens.put("access_token",newAccessToken);
+            tokens.put("refresh_token",newRefreshToken);
+            tokens.put("roles",roleList);
+            tokens.put("permissions",permissionList);
+            return new ApiResponse<>(SUCCESS,200,"token refresh successful",tokens);
+
+        }else {
+            return new ApiResponse<>(FAILED,401,"Invalid token");
+        }
+
     }
 }
