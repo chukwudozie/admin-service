@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -34,7 +35,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Optional<Role> createRole(String roleName) {
-        if (Objects.isNull(roleName) || roleName.isEmpty())
+        if (Objects.isNull(roleName) || roleName.isEmpty() || !validRoleName(roleName))
             return Optional.empty();
         Optional<Role> optionalRole = roleRepository.findByNameIgnoreCase(roleName);
         if (optionalRole.isPresent()){
@@ -46,9 +47,53 @@ public class RoleServiceImpl implements RoleService {
         }
     }
 
+    private boolean validRoleName(String roleName){
+        String formattedRoleName = roleName.trim().toUpperCase();
+        return Arrays.stream(Roles.values())
+                .anyMatch(role -> role.name().equals(formattedRoleName));
+    }
+
+
+
     @Override
     public ApiResponse<AdminUser> assignRolesToUser(String email, List<String> roles) {
-        return null;
+
+        if(isNullOrEmpty(email)){
+            throw new ApiException("Email of user is required",400);
+        }
+        if (Objects.isNull(roles) || roles.isEmpty()){
+            throw new ApiException("At least one role is required to be assigned",400);
+        }
+        AdminUser user = userRepository.findAdminUserByEmailAddress(email)
+                .orElseThrow(() -> new UsernameNotFoundException("No user exists with email "+email));
+
+        Set<Role> userRoles = user.getRoles();
+        Set<Role> newRoles = new HashSet<>();
+        List<String> invalidRoles = new ArrayList<>();
+
+        for (String roleName: roles){
+            Optional<Role> optionalRole = roleRepository.findByNameIgnoreCase(roleName);
+            if(optionalRole.isPresent()){
+                Role role = optionalRole.get();
+                if(Objects.isNull(userRoles))
+                    userRoles = new HashSet<>();
+                if (!userRoles.contains(role)) {
+                    newRoles.add(role);
+                }
+            }else {
+                invalidRoles.add(roleName);
+            }
+        }
+
+        if (!invalidRoles.isEmpty()) {
+            return new ApiResponse<>(FAILED, 400,"Invalid roles: " + String.join(", ", invalidRoles));
+        }
+        userRoles.addAll(newRoles);
+        user.setRoles(userRoles);
+
+        AdminUser updatedUser = userRepository.save(user);
+
+        return new ApiResponse<>(SUCCESS,200,"Roles assigned successfully",updatedUser);
     }
 
     @Override
@@ -76,7 +121,7 @@ public class RoleServiceImpl implements RoleService {
                     .map(this::createRole)
                     .filter(Optional::isPresent)
                     .count();
-            String message = newRolesCount == 0 ? "Roles already exist"
+            String message = newRolesCount == 0 ? "Roles already exist or invalid role names"
                     : (newRolesCount == 1 ? "1 new role created" : newRolesCount + " new roles created");
             return new ApiResponse<>(newRolesCount == 0 ? FAILED : SUCCESS, newRolesCount == 0 ? 400 : 201, message);
         }catch (Exception e){
