@@ -3,7 +3,6 @@ package com.stitch.admin.service.impl;
 import com.stitch.admin.exceptions.custom.ApiException;
 import com.stitch.admin.exceptions.custom.ResourceNotFoundException;
 import com.stitch.admin.model.entity.AdminUser;
-import com.stitch.admin.model.entity.Permission;
 import com.stitch.admin.model.entity.Role;
 import com.stitch.admin.model.enums.Roles;
 import com.stitch.admin.payload.response.ApiResponse;
@@ -16,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -32,7 +30,6 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
     private final AdminUserRepository userRepository;
-    private final PermissionRepository permissionRepository;
 
     @Override
     public Optional<Role> createRole(String roleName) {
@@ -97,20 +94,6 @@ public class RoleServiceImpl implements RoleService {
         return new ApiResponse<>(SUCCESS,200,"Roles assigned successfully",updatedUser);
     }
 
-    @Override
-    public Optional<Permission> createDefaultPermission(String name){
-        if (Objects.isNull(name) || name.isEmpty())
-            return Optional.empty();
-        Optional<Permission> optionalPermission = permissionRepository.findByNameIgnoreCase(name);
-        if (optionalPermission.isPresent())
-            return optionalPermission;
-        else {
-            Permission permission = new Permission(name);
-            permission.setDateCreated(Instant.now());
-            return Optional.of(permissionRepository.save(permission));
-        }
-
-    }
 
     @Override
     public ApiResponse<Map<String, String>> createNewRoles(List<String> roles) {
@@ -179,8 +162,6 @@ public class RoleServiceImpl implements RoleService {
     private boolean isNullOrEmpty(String value){
         return Objects.isNull(value) || value.trim().isEmpty();
     }
-
-
 
 
 }

@@ -20,5 +20,4 @@ public interface RoleService {
     ApiResponse<Void> revokeUserRole(String email, String role);
 
     ApiResponse<List<Role>> getAllRoles(int page, int size, String sort);
-    Optional<Permission> createDefaultPermission(String name);
 }

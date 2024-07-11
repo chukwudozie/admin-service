@@ -12,6 +12,7 @@ import com.stitch.admin.repository.AdminUserRepository;
 import com.stitch.admin.repository.RoleRepository;
 import com.stitch.admin.security.JwtTokenUtils;
 import com.stitch.admin.service.AdminAuthService;
+import com.stitch.admin.service.PermissionService;
 import com.stitch.admin.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     private final AdminUserRepository adminUserRepository;
     private final RoleService roleService;
+    private final PermissionService permissionService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtils jwtTokenUtils;
     private final RoleRepository roleRepository;
@@ -67,7 +69,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             if(Objects.nonNull(role) && !role.isEmpty()){
                 Optional<Role> newRole = roleService.createRole(role);
                 newRole.ifPresent(r ->{
-                    Optional<Permission> optionalPermission = roleService.createDefaultPermission(permission);
+                    Optional<Permission> optionalPermission = permissionService.createPermission(permission);
                     optionalPermission.ifPresent(p ->{
                         if(!roleRepository.existsByPermissionsContains(p)){
                             Set<Permission> userPerm = r.getPermissions();

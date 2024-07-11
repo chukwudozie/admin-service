@@ -7,15 +7,13 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString
 @Table(name = "body_measurement")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -70,6 +68,7 @@ public class BodyMeasurement extends BaseEntity {
     private int trouserLength;
 
     @OneToOne(mappedBy = "bodyMeasurement")
-    private Customer customer;
+    private UserEntity userEntity;
+
 
 }
