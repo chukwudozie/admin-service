@@ -196,6 +196,8 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     public ApiResponse<Map<String, Object>> logout(String token) {
         if (Objects.nonNull(token) && token.startsWith("Bearer ")){
             String jwtToken = token.substring(7);
+            if(blacklistService.isTokenBlacklisted(jwtToken))
+                return new ApiResponse<>(SUCCESS,200, "Already logged ot=ut with token");
             blacklistService.blacklistToken(jwtToken);
             SecurityContextHolder.clearContext();
             return new ApiResponse<>(SUCCESS, 200, "Logout successful");

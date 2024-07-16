@@ -16,7 +16,6 @@ public class TokenBlacklistService {
 
     public void blacklistToken(String token) {
         blacklist.add(token);
-        System.err.println("after blacklist ==> "+blacklist);
     }
 
     public boolean isTokenBlacklisted(String token) {
