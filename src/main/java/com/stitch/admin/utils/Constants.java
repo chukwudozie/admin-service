@@ -3,6 +3,8 @@ package com.stitch.admin.utils;
 import org.springframework.http.HttpStatus;
 
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class Constants {
 
@@ -15,7 +17,22 @@ public final class Constants {
     public static final String FAILED = "FAILED";
     public static  final String SUCCESS = "SUCCESS";
 
+    public static final String PASSWORD_RESET_LINK = "http://localhost:8080/reset-passord";
+
+    public static final String PASSWORD_RESET_TITLE = "Password Reset";
+
+    public static final String RESET_PWD_OTP_EMAIL = "Your OTP to reset your password for STITCH is [OTP], click on this link" +
+            "[LINK] and use your OTP to change your password. OTP expires after 3 minutes";
+
     public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public static final Set<String> ALLOWED_URLS;
+
+    static {
+        ALLOWED_URLS = new HashSet<>();
+        ALLOWED_URLS.add("/api/v1/admin/send-password-notification");
+        ALLOWED_URLS.add("/api/v1/admin/auth/login");
+    }
 
     public static HttpStatus status(int code){
         return (switch (code) {

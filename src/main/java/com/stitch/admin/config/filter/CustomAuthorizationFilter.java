@@ -17,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.*;
 
+import static com.stitch.admin.utils.Constants.ALLOWED_URLS;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
@@ -31,7 +32,7 @@ public class CustomAuthorizationFilter  extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("request path : {}",request.getServletPath());
-        if(request.getServletPath().startsWith("/api/v1/admin/auth/login")){
+        if(ALLOWED_URLS.contains(request.getServletPath())){
             filterChain.doFilter(request,response);
         }else {
             String jwtToken = request.getHeader("Authorization");

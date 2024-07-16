@@ -4,13 +4,15 @@ package com.stitch.admin.model.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 
 @Entity
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@ToString
 @NoArgsConstructor
 @Table(name = "password_reset")
 public class PasswordReset extends BaseEntity {
@@ -27,11 +29,11 @@ public class PasswordReset extends BaseEntity {
     @Column(name = "reset_code")
     private String resetCode;
 
-    @Column(name = "generated_on")
-    private Instant generatedOn;
+//    @Column(name = "generated_on")
+//    private Instant generatedOn;
 
-    @Column(name = "expired_on")
-    private Instant expiredOn;
+//    @Column(name = "expired_on")
+//    private Instant expiredOn;
 
     @Column(name = "device_id")
     private String deviceId;
