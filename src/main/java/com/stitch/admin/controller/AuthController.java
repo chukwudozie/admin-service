@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.stitch.admin.utils.Constants.AUTH_URL;
@@ -49,6 +48,11 @@ public class AuthController {
         return new ResponseEntity<>(response,status(response.getCode()));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Map<String,Object>>> logout(@RequestHeader(name = "Authorization") String token){
+        ApiResponse<Map<String,Object>> response = authService.logout(token);
+        return new ResponseEntity<>(response,status(response.getCode()));
+    }
 
 
 }

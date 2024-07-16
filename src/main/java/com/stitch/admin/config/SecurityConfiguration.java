@@ -2,6 +2,7 @@ package com.stitch.admin.config;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import com.stitch.admin.config.filter.CustomAuthorizationFilter;
+import com.stitch.admin.service.impl.TokenBlacklistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration {
 
     private final Algorithm algorithm;
+    private final TokenBlacklistService blacklistService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -39,7 +41,7 @@ public class SecurityConfiguration {
                         .requestMatchers(PUT,"/api/v1/admin/reset-password").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/admin/auth/login","/api/v1/admin/auth/register", "/api/v1/admin/auth/refresh-token").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(new CustomAuthorizationFilter(algorithm), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomAuthorizationFilter(algorithm, blacklistService), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

@@ -21,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtils jwtTokenUtils;
     private final RoleRepository roleRepository;
+    private final TokenBlacklistService blacklistService;
     @Override
     public Optional<AdminUser> fetchUserByEmail(String email) {
         return adminUserRepository.findAdminUserByEmailAddress(email);
@@ -188,5 +190,17 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             return new ApiResponse<>(FAILED,401,"Invalid token");
         }
 
+    }
+
+    @Override
+    public ApiResponse<Map<String, Object>> logout(String token) {
+        if (Objects.nonNull(token) && token.startsWith("Bearer ")){
+            String jwtToken = token.substring(7);
+            blacklistService.blacklistToken(jwtToken);
+            SecurityContextHolder.clearContext();
+            return new ApiResponse<>(SUCCESS, 200, "Logout successful");
+        }else{
+            return new ApiResponse<>(FAILED, 417, "Invalid token, Logout failed");
+        }
     }
 }

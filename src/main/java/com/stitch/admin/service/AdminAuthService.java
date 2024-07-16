@@ -16,4 +16,6 @@ public interface AdminAuthService {
     ApiResponse<Map<String,Object>> loginUser(LoginRequest request);
 
     ApiResponse<Map<String, Object>> refreshToken(String refreshToken);
+
+    ApiResponse<Map<String, Object>> logout(String token);
 }
