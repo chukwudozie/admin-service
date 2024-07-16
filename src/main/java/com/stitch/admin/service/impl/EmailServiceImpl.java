@@ -17,8 +17,7 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
 
     @Override
-    public boolean sendEmail(String mailBody, String email, String mailTitle) {
-
+    public boolean sendPasswordResetOTP(String mailBody, String email, String mailTitle) {
         try {
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setTo(email);

@@ -1,4 +1,4 @@
-package com.stitch.admin.config.filter;
+package com.stitch.admin.config;
 
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.context.annotation.Bean;

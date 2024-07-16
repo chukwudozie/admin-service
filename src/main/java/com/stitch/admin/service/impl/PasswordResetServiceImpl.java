@@ -53,7 +53,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             passwordReset.setPhoneNumber(adminUser.getPhoneNumber());
             String mailBody = RESET_PWD_OTP_EMAIL.replace("[LINK]",PASSWORD_RESET_LINK)
                     .replace("[OTP]",otp);
-            boolean emailSent = emailService.sendEmail(mailBody, email, PASSWORD_RESET_TITLE);
+            boolean emailSent = emailService.sendPasswordResetOTP(mailBody, email, PASSWORD_RESET_TITLE);
             if(emailSent){
                 passwordResetRepository.save(passwordReset);
                 return new ApiResponse<>(SUCCESS, 200,"Mail sent successfully for reset");
