@@ -16,9 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.util.List;
-
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -37,6 +36,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/v1/admin/auth/**").permitAll()
                         .requestMatchers(GET,"/api/v1/admin/send-password-notification").permitAll()
+                        .requestMatchers(PUT,"/api/v1/admin/reset-password").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/admin/auth/login","/api/v1/admin/auth/register", "/api/v1/admin/auth/refresh-token").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new CustomAuthorizationFilter(algorithm), UsernamePasswordAuthenticationFilter.class)

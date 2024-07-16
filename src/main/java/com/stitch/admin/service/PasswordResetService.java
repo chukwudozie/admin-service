@@ -1,6 +1,6 @@
 package com.stitch.admin.service;
 
-import com.stitch.admin.model.dto.PasswordResetRequest;
+import com.stitch.admin.payload.request.PasswordResetRequest;
 import com.stitch.admin.payload.response.ApiResponse;
 
 public interface PasswordResetService {

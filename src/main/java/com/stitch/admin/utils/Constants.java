@@ -32,6 +32,7 @@ public final class Constants {
         ALLOWED_URLS = new HashSet<>();
         ALLOWED_URLS.add("/api/v1/admin/send-password-notification");
         ALLOWED_URLS.add("/api/v1/admin/auth/login");
+        ALLOWED_URLS.add("/api/v1/admin/reset-password");
     }
 
     public static HttpStatus status(int code){
@@ -42,6 +43,7 @@ public final class Constants {
             case 400 -> HttpStatus.BAD_REQUEST;
             case 401 -> HttpStatus.UNAUTHORIZED;
             case 405 -> HttpStatus.CONFLICT;
+            case 406 -> HttpStatus.NOT_ACCEPTABLE;
             case 417 -> HttpStatus.EXPECTATION_FAILED;
             case 503, 504  -> HttpStatus.SERVICE_UNAVAILABLE;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;

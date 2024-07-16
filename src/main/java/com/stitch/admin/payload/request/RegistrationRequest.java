@@ -1,6 +1,7 @@
 package com.stitch.admin.payload.request;
 
 import com.stitch.admin.validation.ValidDateFormat;
+import com.stitch.admin.validation.ValidEmail;
 import com.stitch.admin.validation.ValidPassword;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
@@ -16,7 +17,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class RegistrationRequest {
 
+
     @NotBlank(message = "Email is required")
+    @ValidEmail
     private String emailAddress;
     @NotBlank(message = "Password is required")
     @ValidPassword

@@ -1,7 +1,6 @@
 package com.stitch.admin.controller;
 
-import com.stitch.admin.model.dto.PasswordResetRequest;
-import com.stitch.admin.model.entity.PasswordReset;
+import com.stitch.admin.payload.request.PasswordResetRequest;
 import com.stitch.admin.payload.response.ApiResponse;
 import com.stitch.admin.service.PasswordResetService;
 import lombok.RequiredArgsConstructor;
