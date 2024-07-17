@@ -26,7 +26,7 @@ public abstract class User extends BaseEntity {
     @Column(name = "middle_name")
     protected String middleName;
 
-    @Column(name = "email_address", unique = true)
+    @Column(name = "email_address", unique = true, updatable = false)
     protected String emailAddress;
 
     @Column(name = "phone_number", unique = true, nullable = false)

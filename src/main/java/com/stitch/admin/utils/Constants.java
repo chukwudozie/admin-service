@@ -25,6 +25,7 @@ public final class Constants {
             "[LINK] and use your OTP to change your password. OTP expires after 3 minutes";
 
     public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static final String EMPTY = "";
 
     public static final Set<String> ALLOWED_URLS;
 

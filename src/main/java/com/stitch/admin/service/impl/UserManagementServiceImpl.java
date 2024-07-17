@@ -3,17 +3,20 @@ package com.stitch.admin.service.impl;
 import com.stitch.admin.exceptions.custom.ApiException;
 import com.stitch.admin.exceptions.custom.ResourceNotFoundException;
 import com.stitch.admin.model.entity.AdminUser;
+import com.stitch.admin.payload.request.PasswordUpdateRequest;
 import com.stitch.admin.payload.request.UpdateUserRequest;
 import com.stitch.admin.payload.response.ApiResponse;
 import com.stitch.admin.repository.AdminUserRepository;
-import com.stitch.admin.security.JwtTokenUtils;
 import com.stitch.admin.service.UserManagementService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.beans.PropertyDescriptor;
@@ -22,7 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.stitch.admin.utils.Constants.FAILED;
 import static com.stitch.admin.utils.Constants.SUCCESS;
+import static com.stitch.admin.utils.Constants.EMPTY;
 
 @Service
 @Slf4j
@@ -30,16 +35,15 @@ import static com.stitch.admin.utils.Constants.SUCCESS;
 public class UserManagementServiceImpl implements UserManagementService {
 
     private final AdminUserRepository userRepository;
-    private final JwtTokenUtils utils;
-    private final TokenBlacklistService blacklistService;
+    private final BCryptPasswordEncoder encoder;
 
     @Override
-    public ApiResponse<AdminUser> updateUserDetails(UpdateUserRequest request, String email, HttpServletRequest servletRequest) {
+    public ApiResponse<AdminUser> updateUserDetails(UpdateUserRequest request, String email) {
         if(Objects.isNull(email) || email.isEmpty()){
             throw new ApiException("Email is required for update",400);
         }
 
-        boolean isPermittedUser = checkForUserIdentity(servletRequest, email);
+        boolean isPermittedUser = checkForUserIdentity(email);
         if (!isPermittedUser){
             throw new ApiException("Logged in user not permitted to edit details ",406);
         }
@@ -60,12 +64,114 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     }
 
-    private boolean checkForUserIdentity(HttpServletRequest servletRequest, String email) {
+    @Override
+    public ApiResponse<Void> updateUserPassword(PasswordUpdateRequest request) {
+
+        if(Objects.isNull(request)){
+            return new ApiResponse<>(FAILED,400,"invalid password update request");
+        }
         try {
-            String auth = servletRequest.getHeader("Authorization");
-            if (Objects.nonNull(auth) && auth.startsWith("Bearer ") && !blacklistService.isTokenBlacklisted(auth.substring(7))){
-                String jwtToken = auth.substring(7);
-                String  validEmail = utils.extractUsernameFromToken(jwtToken);
+            String loggedInUser = getLoggedInUser();
+            if (Objects.isNull(loggedInUser) || loggedInUser.isEmpty()){
+                throw new ApiException("Could not validate logged in user",401);
+            }
+            AdminUser existingUser = userRepository.findAdminUserByEmailAddress(loggedInUser)
+                    .orElseThrow(() -> new ResourceNotFoundException("No user found with email "+loggedInUser));
+
+            String defaultPassword = value(existingUser.getPassword());
+            String oldPassword = value(request.getOldPassword());
+            String newPassword = value(request.getNewPassword());
+            String confirmPassword = value(request.getConfirmPassword());
+
+            if(!encoder.matches(oldPassword, defaultPassword)){
+                throw new ApiException("old password does not match with default password for user",417);
+            }
+
+            if (!Objects.equals(newPassword, confirmPassword)){
+                throw new ApiException("new password field must match confirm password field",417);
+            }
+            existingUser.setPassword(encoder.encode(newPassword));
+            existingUser.setLastUpdated(Instant.now());
+            existingUser.setLastPasswordChange(Instant.now());
+            userRepository.save(existingUser);
+            return new ApiResponse<>(SUCCESS,200, "Password successfully updated");
+
+        } catch (ApiException e){
+            log.error("Exception occurred updating user password => {}",e.getMessage());
+            return new ApiResponse<>(FAILED, e.getCode(), e.getMessage());
+        } catch (Exception e){
+            log.error("Error occurred updating user password => {}",e.getMessage());
+            return new ApiResponse<>(FAILED, 406, "Failed to update user password");
+        }
+
+    }
+
+    @Override
+    public ApiResponse<Void> deactivateUser(String email) {
+        if(Objects.isNull(email) || email.isEmpty()){
+            throw new ApiException("Email is required for update",400);
+        }
+        try {
+            AdminUser existingUser = userRepository.findAdminUserByEmailAddress(email)
+                    .orElseThrow(() -> new ResourceNotFoundException("No user found with email "+email));
+            existingUser.setActivated(false);
+            existingUser.setEnabled(false);
+            existingUser.setLastUpdated(Instant.now());
+            userRepository.save(existingUser);
+            return new ApiResponse<>(SUCCESS,200, String.format("User with email %s has been deactivated",email));
+        }catch (Exception e){
+            log.error("Exception occurred deactivating user  ---> {}",e.getMessage());
+            throw new ApiException("Failed to deactivate user ",400);
+        }
+
+    }
+
+    @Override
+    public ApiResponse<Void> activateUser(String email) {
+        if(Objects.isNull(email) || email.isEmpty()){
+            throw new ApiException("Email is required for update",400);
+        }
+        try {
+            AdminUser existingUser = userRepository.findAdminUserByEmailAddress(email)
+                    .orElseThrow(() -> new ResourceNotFoundException("No user found with email "+email));
+            existingUser.setActivated(true);
+            existingUser.setEnabled(true);
+            existingUser.setLastUpdated(Instant.now());
+            userRepository.save(existingUser);
+            return new ApiResponse<>(SUCCESS,200, String.format("User with email %s has been activated",email));
+        }catch (Exception e){
+            log.error("Exception occurred activating user  ---> {}",e.getMessage());
+            throw new ApiException("Failed to activate user ",400);
+        }
+
+    }
+
+
+    private String value(Object o){
+        if (Objects.isNull(o))
+            return EMPTY;
+        return o.toString();
+    }
+
+    private String getLoggedInUser() {
+        String validEmail = EMPTY;
+        try {
+            SecurityContext context = SecurityContextHolder.getContext();
+            if(Objects.nonNull(context)){
+                Authentication  authentication= context.getAuthentication();
+                validEmail = authentication.getName();
+            }
+        }catch (Exception e){
+            log.error("Exception occurred while fetching logged in user ==> {}",e.getMessage());
+            validEmail = EMPTY;
+        }
+        return validEmail;
+    }
+
+    private boolean checkForUserIdentity( String email) {
+        try {
+            String validEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            if (Objects.nonNull(validEmail) && !validEmail.isEmpty()){
                 return Objects.equals(validEmail,email);
             }else
                 return false;

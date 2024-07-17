@@ -12,10 +12,6 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class PasswordUpdateRequest {
-    @NotNull(message = "Email is required")
-    @ValidEmail
-    private String emailAddress;
-
     @NotNull(message = "old password  is required")
     private String oldPassword;
 

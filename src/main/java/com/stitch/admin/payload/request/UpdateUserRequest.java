@@ -1,6 +1,5 @@
 package com.stitch.admin.payload.request;
 
-import jakarta.persistence.Column;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -11,8 +10,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateUserRequest {
-
-    private String emailAddress;
     private String firstName;
     private String lastName;
     private String country;
@@ -23,6 +20,5 @@ public class UpdateUserRequest {
     private String city;
     private String middleName;
     private String image;
-
 
 }

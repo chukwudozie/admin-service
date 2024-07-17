@@ -1,11 +1,10 @@
 package com.stitch.admin.controller;
 
 import com.stitch.admin.model.entity.AdminUser;
-import com.stitch.admin.payload.request.RegistrationRequest;
+import com.stitch.admin.payload.request.PasswordUpdateRequest;
 import com.stitch.admin.payload.request.UpdateUserRequest;
 import com.stitch.admin.payload.response.ApiResponse;
 import com.stitch.admin.service.UserManagementService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,25 +26,38 @@ public class UserManagementController {
 
     @PutMapping("/update-user")
     @PreAuthorize("hasAuthority('PERM_DEFAULT')")
-    public ResponseEntity<ApiResponse<AdminUser>> updateUserDetails(@RequestBody UpdateUserRequest request,
-                                                                    @RequestParam(required = false)String email, HttpServletRequest servletRequest){
+    public ResponseEntity<ApiResponse<AdminUser>> updateUserDetails(@Valid @RequestBody UpdateUserRequest request,
+                                                                    @RequestParam(required = false)String email){
         log.info("Admin User Update request ==> {}",request);
-        ApiResponse<AdminUser> response = userManagementService.updateUserDetails(request,email, servletRequest);
+        ApiResponse<AdminUser> response = userManagementService.updateUserDetails(request,email);
         return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @PutMapping("/update-password")
     @PreAuthorize("hasAuthority('PERM_DEFAULT')")
-    public ResponseEntity<ApiResponse<AdminUser>> updatePassword(@RequestBody UpdateUserRequest request,
-                                                                    @RequestParam(required = false)String email, HttpServletRequest servletRequest){
+    public ResponseEntity<ApiResponse<Void>> updatePassword(@RequestBody PasswordUpdateRequest request){
         log.info("Admin User password update request ==> {}",request);
-        ApiResponse<AdminUser> response = userManagementService.updateUserDetails(request,email, servletRequest);
+        ApiResponse<Void> response = userManagementService.updateUserPassword(request);
         return new ResponseEntity<>(response, status(response.getCode()));
     }
 
+    @PatchMapping("/deactivate")
+    @PreAuthorize("hasAuthority('PERM_DEACTIVATE_USER')")
+    public ResponseEntity<ApiResponse<Void>> deactivateAdmin(@RequestParam String email){
+        ApiResponse<Void> response = userManagementService.deactivateUser(email);
+        return new ResponseEntity<>(response,status(response.getCode()));
+    }
+
+    @PatchMapping("/activate")
+    @PreAuthorize("hasAuthority('PERM_DEACTIVATE_USER')")
+    public ResponseEntity<ApiResponse<Void>> activateAdmin(@RequestParam String email){
+        ApiResponse<Void> response = userManagementService.activateUser(email);
+        return new ResponseEntity<>(response,status(response.getCode()));
+    }
+
     //update password
-    //update details  -- in progress
-    //deactivate user
+    //update details  -- done
+    //deactivate user --
     //activate user
     //get all active users
     //get all vendor users
