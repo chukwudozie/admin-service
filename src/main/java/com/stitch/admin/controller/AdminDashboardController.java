@@ -38,10 +38,10 @@ public class AdminDashboardController {
     public ResponseEntity<ApiResponse<List<UserDto>>> fetchUsers(
             @RequestParam(defaultValue = "0", required = false) int page,
        @RequestParam(defaultValue = "10", required = false) int size,
-        @RequestParam(required = false, defaultValue = "all")String type,
+        @RequestParam(required = false, defaultValue = "all")String roleName,
         @RequestParam(required = false,defaultValue = "true")String enabled,
-         @RequestParam(required = false, defaultValue = "")String name){
-        ApiResponse<List<UserDto>> response = dashboardService.fetchUsers(page, size, type,enabled,name);
+         @RequestParam(required = false, defaultValue = "")String username){
+        ApiResponse<List<UserDto>> response = dashboardService.fetchUsers(page, size, roleName,enabled,username);
         return new ResponseEntity<>(response,status(response.getCode()));
     }
 }

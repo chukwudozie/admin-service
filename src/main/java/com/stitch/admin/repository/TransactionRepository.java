@@ -11,5 +11,4 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction,Long> {
 
     List<Transaction> findAllByDateCreatedBetween(Instant initialDate, Instant finalDate);
-    List<Transaction> findTransactionsByDateCreatedWithin(Instant within);
 }

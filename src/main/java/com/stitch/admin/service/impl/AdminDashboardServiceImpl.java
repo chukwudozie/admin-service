@@ -1,15 +1,23 @@
 package com.stitch.admin.service.impl;
 
 import com.stitch.admin.model.dto.UserDto;
+import com.stitch.admin.model.entity.UserEntity;
 import com.stitch.admin.payload.response.ApiResponse;
 import com.stitch.admin.repository.UserEntityRepository;
 import com.stitch.admin.service.AdminDashboardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.stitch.admin.utils.Constants.FAILED;
 import static com.stitch.admin.utils.Constants.SUCCESS;
@@ -23,7 +31,6 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
 
     @Override
     public ApiResponse<Map<String, Object>> getCount() {
-
         try {
             long totalCount  = userEntityRepository.count();
             long countActive = userEntityRepository.countUserEntitiesByEnabledTrue();
@@ -56,7 +63,31 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
     }
 
     @Override
-    public ApiResponse<List<UserDto>> fetchUsers(int page, int size, String type, String enabled, String name) {
-        return null;
+    public ApiResponse<List<UserDto>> fetchUsers(int page, int size, String roleName, String enabled, String name) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Specification<UserEntity> spec = Specification.where(UserSpecification.hasRoleName(roleName))
+                    .and(UserSpecification.isEnabled(enabled(enabled)))
+                    .and(UserSpecification.hasName(name));
+            Page<UserEntity> userPage = userEntityRepository.findAll(spec, pageable);
+            List<UserDto> userDtos = userPage.stream().map(this::convertToDto).collect(Collectors.toList());
+
+            return new ApiResponse<>(SUCCESS,200,"list of users",userDtos);
+        }catch (Exception e){
+            log.error("Failed to fetch list of users --> {}",e.getMessage());
+            return new ApiResponse<>(FAILED,400,"Failed to fetch list of users");
+        }
+    }
+
+    private UserDto convertToDto(UserEntity userEntity) {
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(userEntity,userDto);
+        return userDto;
+    }
+
+    private boolean enabled(String enabled){
+        if(Objects.isNull(enabled) || enabled.trim().isEmpty())
+            return false;
+        return enabled.equals("true");
     }
 }

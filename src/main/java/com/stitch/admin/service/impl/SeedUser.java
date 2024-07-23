@@ -3,11 +3,13 @@ package com.stitch.admin.service.impl;
 import com.stitch.admin.model.entity.AdminUser;
 import com.stitch.admin.model.entity.Permission;
 import com.stitch.admin.model.entity.Role;
+import com.stitch.admin.model.entity.UserEntity;
 import com.stitch.admin.model.enums.Permissions;
 import com.stitch.admin.model.enums.Roles;
 import com.stitch.admin.repository.AdminUserRepository;
 import com.stitch.admin.repository.PermissionRepository;
 import com.stitch.admin.repository.RoleRepository;
+import com.stitch.admin.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -19,6 +21,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,19 +30,55 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class SeedUser implements CommandLineRunner {
 
-    private final AdminUserRepository userRepository;
+    private final AdminUserRepository adminUserRepository;
+    private final UserEntityRepository userRepository;
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
     private static final String email = "stitchAdmin@gmail.com";
     private final BCryptPasswordEncoder passwordEncoder;
     private static final String password = "P@sswd2024";
+    private static final String CUSTOMER = "CUSTOMER";
+    private static final String VENDOR = "VENDOR";
+    private static final String VENDOR_PHONE = "123456";
+    private static final String CUSTOMER_PHONE = "246809";
 
     @Override
     public void run(String... args) {
 
         createSuperAdmin();
 
+        seedUsers();
 
+
+    }
+
+    private void seedUsers() {
+        createUser(CUSTOMER, CUSTOMER_PHONE);
+        createUser(VENDOR, VENDOR_PHONE);
+    }
+
+    private void createUser(String name, String phone) {
+        if(!userRepository.existsByUsernameAndRole_Name(name,name)){
+            String firstName = name.concat("_").concat("FIRSTNAME");
+            String lastName = name.concat("_").concat("LASTNAME");
+            UserEntity user = new UserEntity();
+            user.setUsername(name);
+            Role customerRole;
+            if(!roleRepository.existsByNameIgnoreCase(name)){
+                customerRole = new Role(name);
+                customerRole = roleRepository.save(customerRole);
+            }else
+                customerRole = roleRepository.findByNameIgnoreCase(name).get();
+            user.setRole(customerRole);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setCountry("NIGERIA");
+            user.setPhoneNumber(phone);
+            user.setEmailAddress(name.concat("@gmail.com"));
+            user.setUserId(UUID.randomUUID().toString());
+            user.setDateCreated(Instant.now());
+            userRepository.save(user);
+        }
     }
 
     @Transactional
@@ -47,16 +86,17 @@ public class SeedUser implements CommandLineRunner {
 
         try {
             String superAdminName = Roles.SUPER_ADMIN.name();
-            if(userRepository.findAdminUserByEmailAddress(email).isPresent()){
+            if(adminUserRepository.findAdminUserByEmailAddress(email).isPresent()){
                 log.info("SUPER ADMIN ALREADY EXISTS");
                 return;
             }
             if(roleRepository.existsByNameIgnoreCase(superAdminName)
-                    && userRepository.existsByRolesContains(roleRepository.findByNameIgnoreCase(superAdminName).orElseThrow())){
+                    && adminUserRepository.existsByRolesContains(roleRepository.findByNameIgnoreCase(superAdminName).orElseThrow())){
                     log.info("SUPER ADMIN ALREADY EXISTS");
                     return;
 
             }
+
 
 
             AdminUser superAdmin = new AdminUser();
@@ -75,7 +115,7 @@ public class SeedUser implements CommandLineRunner {
             superAdmin.setFirstName("");
             superAdmin.setLastName("");
             superAdmin.setPhoneNumber("0811111111");
-            AdminUser savedUser = userRepository.save(superAdmin);
+            AdminUser savedUser = adminUserRepository.save(superAdmin);
             log.info("Saved User == > {}",savedUser);
 
         }catch (Exception e){
