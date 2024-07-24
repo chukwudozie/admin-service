@@ -1,11 +1,17 @@
 package com.stitch.admin.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-
+@Slf4j
 public final class Constants {
 
     private Constants(){}
@@ -50,5 +56,19 @@ public final class Constants {
             case 503, 504  -> HttpStatus.SERVICE_UNAVAILABLE;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         });
+    }
+
+    public static Optional<String> getLoggedInUser() {
+        try {
+            SecurityContext context = SecurityContextHolder.getContext();
+            if(Objects.nonNull(context)){
+                Authentication authentication= context.getAuthentication();
+                return Optional.ofNullable(authentication.getName());
+            }
+            return Optional.empty();
+        }catch (Exception e){
+            log.error("Exception occurred while fetching logged in user ==> {}",e.getMessage());
+            return Optional.empty();
+        }
     }
 }

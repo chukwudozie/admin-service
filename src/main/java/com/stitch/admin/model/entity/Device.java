@@ -4,16 +4,17 @@ import com.stitch.admin.model.dto.DeviceDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.envers.Audited;
 
 
-@Data
-@Entity
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Entity
 @Table(name = "device")
+@Audited
 public class Device extends BaseEntity {
 
     @Column(name = "device_id")

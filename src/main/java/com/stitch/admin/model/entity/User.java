@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.time.Instant;
 
@@ -14,6 +15,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @ToString(exclude = {"password"})
 @MappedSuperclass
+@Audited
 public abstract class User extends BaseEntity {
 
 

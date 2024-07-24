@@ -2,6 +2,7 @@ package com.stitch.admin.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -14,6 +15,7 @@ import java.util.Set;
 @Entity
 @ToString
 @Table(name = "admin_role")
+@Audited
 public class Role extends BaseEntity{
 
     private String name;

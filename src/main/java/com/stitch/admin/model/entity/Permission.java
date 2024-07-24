@@ -3,6 +3,7 @@ package com.stitch.admin.model.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import java.util.Objects;
 
@@ -13,6 +14,7 @@ import java.util.Objects;
 @Entity
 @ToString
 @Table(name = "admin_permissions")
+@Audited
 public class Permission extends BaseEntity{
     private String name;
 

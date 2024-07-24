@@ -41,16 +41,30 @@ public class UserManagementController {
         return new ResponseEntity<>(response, status(response.getCode()));
     }
 
-    @PatchMapping("/deactivate")
+    @PatchMapping("/deactivate-admin")
     @PreAuthorize("hasAuthority('PERM_DEACTIVATE_USER')")
     public ResponseEntity<ApiResponse<Void>> deactivateAdmin(@RequestParam String email){
+        ApiResponse<Void> response = userManagementService.deactivateAdmin(email);
+        return new ResponseEntity<>(response,status(response.getCode()));
+    }
+
+    @PatchMapping("/activate-admin")
+    @PreAuthorize("hasAuthority('PERM_DEACTIVATE_USER')")
+    public ResponseEntity<ApiResponse<Void>> activateAdmin(@RequestParam String email){
+        ApiResponse<Void> response = userManagementService.activateAdmin(email);
+        return new ResponseEntity<>(response,status(response.getCode()));
+    }
+
+    @PatchMapping("/deactivate-user")
+    @PreAuthorize("hasAuthority('PERM_DEACTIVATE_USER')")
+    public ResponseEntity<ApiResponse<Void>> deactivateUser(@RequestParam String email){
         ApiResponse<Void> response = userManagementService.deactivateUser(email);
         return new ResponseEntity<>(response,status(response.getCode()));
     }
 
-    @PatchMapping("/activate")
+    @PatchMapping("/activate-user")
     @PreAuthorize("hasAuthority('PERM_DEACTIVATE_USER')")
-    public ResponseEntity<ApiResponse<Void>> activateAdmin(@RequestParam String email){
+    public ResponseEntity<ApiResponse<Void>> activateUser(@RequestParam String email){
         ApiResponse<Void> response = userManagementService.activateUser(email);
         return new ResponseEntity<>(response,status(response.getCode()));
     }

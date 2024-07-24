@@ -5,11 +5,13 @@ package com.stitch.admin.model.entity;
 import com.stitch.admin.model.enums.IdentityType;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.envers.Audited;
 
 
 @Data
 @Entity
 @Table(name = "identity_document")
+@Audited
 public class IdentityDocument extends BaseEntity {
 
     @Column(name = "citizenship")

@@ -31,5 +31,12 @@ public abstract class BaseEntity {
     @Column(name = "last_updated")
     protected Instant lastUpdated;
 
+    @Column(name = "created_by")
+    protected String createdBy;
+
+    @Column(name = "modified_by")
+    protected String modifiedBy;
+
+
 
 }

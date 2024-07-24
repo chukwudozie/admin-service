@@ -32,8 +32,7 @@ import java.time.Period;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.stitch.admin.utils.Constants.FAILED;
-import static com.stitch.admin.utils.Constants.SUCCESS;
+import static com.stitch.admin.utils.Constants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +58,8 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         validateUser(request);
 
         AdminUser adminUser = new AdminUser();
+        String loggedInUser = getLoggedInUser().orElseThrow(() -> new ApiException("Could not validate logged in user",401));
+
 
         try {
             BeanUtils.copyProperties(request,adminUser);
@@ -78,6 +79,8 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                             if(Objects.isNull(userPerm))
                                 userPerm = new HashSet<>();
                             userPerm.add(p);
+                            r.setModifiedBy(loggedInUser);
+                            r.setLastUpdated(Instant.now());
                             roleRepository.save(r);
                         }
                     });
@@ -87,6 +90,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             }
             adminUser.setRoles(userRoles);
             adminUser.setDateCreated(Instant.now());
+            adminUser.setModifiedBy(loggedInUser);
 
             AdminUser savedUser = adminUserRepository.save(adminUser);
             return new ApiResponse<>(SUCCESS,201,"User successfully created", savedUser);

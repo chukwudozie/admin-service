@@ -20,8 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.*;
 
-import static com.stitch.admin.utils.Constants.FAILED;
-import static com.stitch.admin.utils.Constants.SUCCESS;
+import static com.stitch.admin.utils.Constants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,12 +34,14 @@ public class RoleServiceImpl implements RoleService {
     public Optional<Role> createRole(String roleName) {
         if (Objects.isNull(roleName) || roleName.isEmpty() || !validRoleName(roleName))
             return Optional.empty();
+        String loggedInUser = getLoggedInUser().orElseThrow(() -> new ApiException("Could not validate logged in user",401));
         Optional<Role> optionalRole = roleRepository.findByNameIgnoreCase(roleName);
         if (optionalRole.isPresent()){
             return optionalRole;
         }else {
             Role newRole = new Role(roleName);
             newRole.setDateCreated(Instant.now());
+            newRole.setCreatedBy(loggedInUser);
             return Optional.of(roleRepository.save(newRole));
         }
     }
@@ -158,7 +159,6 @@ public class RoleServiceImpl implements RoleService {
         return new ApiResponse<>(SUCCESS,200,"available roles",roles.getContent());
 
     }
-
     private boolean isNullOrEmpty(String value){
         return Objects.isNull(value) || value.trim().isEmpty();
     }

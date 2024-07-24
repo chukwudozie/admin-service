@@ -18,8 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.*;
 
-import static com.stitch.admin.utils.Constants.FAILED;
-import static com.stitch.admin.utils.Constants.SUCCESS;
+import static com.stitch.admin.utils.Constants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +31,12 @@ public class PermissionServiceImpl implements PermissionService {
     public ApiResponse<Role> assignPermissionsToRole(String roleName, List<String> permissions) {
         if (isNullOrEmpty(roleName)){
             throw new ApiException("Role name is required",400);
+
         }
         if (Objects.isNull(permissions) || permissions.isEmpty()){
             throw new ApiException("At least one permission is required to be assigned",400);
         }
+        String loggedInUser = getLoggedInUser().orElseThrow(() -> new ApiException("Could not validate logged in user",401));
         Role role = roleRepository.findByNameIgnoreCase(roleName)
                 .orElseThrow(() -> new ResourceNotFoundException("No Role found with name : "+roleName));
         Set<Permission> userPermissions = Objects.isNull(role.getPermissions()) ? new HashSet<>() : role.getPermissions();
@@ -57,6 +58,8 @@ public class PermissionServiceImpl implements PermissionService {
         }
         userPermissions.addAll(newPermissions);
         role.setPermissions(userPermissions);
+        role.setLastUpdated(Instant.now());
+        role.setModifiedBy(loggedInUser);
         Role updatedRole = roleRepository.save(role);
         return new ApiResponse<>(SUCCESS,200,"Permissions assigned successfully",updatedRole);
 
@@ -87,6 +90,7 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public Optional<Permission> createPermission(String permissionName) {
+        String loggedInUser = getLoggedInUser().orElseThrow(() -> new ApiException("Could not validate logged in user",401));
         if (Objects.isNull(permissionName) || permissionName.isEmpty() || !validPermissionName(permissionName))
             return Optional.empty();
         Optional<Permission> optionalPermission = permissionRepository.findByNameIgnoreCase(permissionName);
@@ -95,6 +99,7 @@ public class PermissionServiceImpl implements PermissionService {
         }else {
             Permission newPermission = new Permission(permissionName.toUpperCase());
             newPermission.setDateCreated(Instant.now());
+            newPermission.setCreatedBy(loggedInUser);
             return Optional.of(permissionRepository.save(newPermission));
         }
     }

@@ -78,8 +78,10 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             reset.setResetCode(passwordReset.getResetCode());
             reset.setDateCreated(Instant.now());
             reset.setLastUpdated(Instant.now());
+            reset.setModifiedBy(passwordReset.getEmailAddress());
             passwordResetRepository.save(reset);
         }else {
+            passwordReset.setCreatedBy(passwordReset.getEmailAddress());
             passwordResetRepository.save(passwordReset);
         }
     }
@@ -104,6 +106,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         }else{
             user.setPassword(passwordEncoder.encode(newPassword));
             user.setLastUpdated(Instant.now());
+            user.setModifiedBy(email);
             userRepository.save(user);
             passwordResetRepository.delete(existingCode);
             return new ApiResponse<>(SUCCESS,200, "Password successfully updated!");

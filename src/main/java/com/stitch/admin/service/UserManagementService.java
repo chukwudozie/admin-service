@@ -10,6 +10,10 @@ public interface UserManagementService {
 
     ApiResponse<Void> updateUserPassword(PasswordUpdateRequest request);
 
+    ApiResponse<Void> deactivateAdmin(String email);
+
+    ApiResponse<Void> activateAdmin(String email);
+
     ApiResponse<Void> deactivateUser(String email);
 
     ApiResponse<Void> activateUser(String email);
