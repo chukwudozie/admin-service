@@ -15,11 +15,11 @@ import java.util.Objects;
 @ToString
 @Table(name = "admin_permissions")
 @Audited
-public class Permission extends BaseEntity{
+public class Permission extends BaseEntity {
     private String name;
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Permission role = (Permission) o;

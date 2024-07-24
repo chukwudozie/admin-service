@@ -25,64 +25,49 @@ public class UserManagementController {
 
 
     @PutMapping("/update-user")
-    @PreAuthorize("hasAuthority('PERM_DEFAULT')")
+    @PreAuthorize("hasAuthority('PERM_UPDATE_USER')")
     public ResponseEntity<ApiResponse<AdminUser>> updateUserDetails(@Valid @RequestBody UpdateUserRequest request,
-                                                                    @RequestParam(required = false)String email){
-        log.info("Admin User Update request ==> {}",request);
-        ApiResponse<AdminUser> response = userManagementService.updateUserDetails(request,email);
+                                                                    @RequestParam(required = false) String email) {
+        log.info("Admin User Update request ==> {}", request);
+        ApiResponse<AdminUser> response = userManagementService.updateUserDetails(request, email);
         return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @PutMapping("/update-password")
-    @PreAuthorize("hasAuthority('PERM_DEFAULT')")
-    public ResponseEntity<ApiResponse<Void>> updatePassword(@RequestBody PasswordUpdateRequest request){
-        log.info("Admin User password update request ==> {}",request);
+    @PreAuthorize("hasAuthority('PERM_UPDATE_PSW')")
+    public ResponseEntity<ApiResponse<Void>> updatePassword(@RequestBody PasswordUpdateRequest request) {
+        log.info("Admin User password update request ==> {}", request);
         ApiResponse<Void> response = userManagementService.updateUserPassword(request);
         return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @PatchMapping("/deactivate-admin")
-    @PreAuthorize("hasAuthority('PERM_DEACTIVATE_USER')")
-    public ResponseEntity<ApiResponse<Void>> deactivateAdmin(@RequestParam String email){
+    @PreAuthorize("hasAuthority('PERM_DEACTIVATE_ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> deactivateAdmin(@RequestParam String email) {
         ApiResponse<Void> response = userManagementService.deactivateAdmin(email);
-        return new ResponseEntity<>(response,status(response.getCode()));
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
 
+
     @PatchMapping("/activate-admin")
-    @PreAuthorize("hasAuthority('PERM_DEACTIVATE_USER')")
-    public ResponseEntity<ApiResponse<Void>> activateAdmin(@RequestParam String email){
+    @PreAuthorize("hasAuthority('PERM_ACTIVATE_ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> activateAdmin(@RequestParam String email) {
         ApiResponse<Void> response = userManagementService.activateAdmin(email);
-        return new ResponseEntity<>(response,status(response.getCode()));
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @PatchMapping("/deactivate-user")
     @PreAuthorize("hasAuthority('PERM_DEACTIVATE_USER')")
-    public ResponseEntity<ApiResponse<Void>> deactivateUser(@RequestParam String email){
+    public ResponseEntity<ApiResponse<Void>> deactivateUser(@RequestParam String email) {
         ApiResponse<Void> response = userManagementService.deactivateUser(email);
-        return new ResponseEntity<>(response,status(response.getCode()));
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @PatchMapping("/activate-user")
-    @PreAuthorize("hasAuthority('PERM_DEACTIVATE_USER')")
-    public ResponseEntity<ApiResponse<Void>> activateUser(@RequestParam String email){
+    @PreAuthorize("hasAuthority('PERM_ACTIVATE_USER')")
+    public ResponseEntity<ApiResponse<Void>> activateUser(@RequestParam String email) {
         ApiResponse<Void> response = userManagementService.activateUser(email);
-        return new ResponseEntity<>(response,status(response.getCode()));
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
-
-    //update password
-    //update details  -- done
-    //deactivate user --
-    //activate user
-    //get all active users
-    //get all vendor users
-    //get all customer users
-    //get all orders pending
-    // get all orders completed
-    //get all transactions completed
-    //get all admins
-    //disable admins
-    //enable admins
-    //disable vendors or customers\
-    //get a particuler user (get a vendor, get a customer)
 
 }

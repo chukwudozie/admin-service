@@ -28,30 +28,30 @@ public class AuthController {
     @PostMapping("/register")
     @PreAuthorize("hasAuthority('PERM_CREATE_ADMIN')")
     public ResponseEntity<ApiResponse<AdminUser>> registerUser(@Valid @RequestBody RegistrationRequest request,
-                                   @RequestParam(required = false, defaultValue = "DEFAULT_ADMIN")String role,
-                                   @RequestParam(required = false, defaultValue = "PERM_DEFAULT") String permission){
-        log.info("Admin Registration request ==> {}",request);
-        ApiResponse<AdminUser> response = authService.registerUser(request,role, permission);
+                                                               @RequestParam(required = false, defaultValue = "DEFAULT_ADMIN") String role,
+                                                               @RequestParam(required = false, defaultValue = "PERM_DEFAULT") String permission) {
+        log.info("Admin Registration request ==> {}", request);
+        ApiResponse<AdminUser> response = authService.registerUser(request, role, permission);
         return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<Map<String,Object>>> loginUser(@RequestBody LoginRequest request){
-        log.info("Login Request ==> {}",request);
-        ApiResponse<Map<String,Object>> token = authService.loginUser(request);
-        return new ResponseEntity<>(token,status(token.getCode()));
+    public ResponseEntity<ApiResponse<Map<String, Object>>> loginUser(@RequestBody LoginRequest request) {
+        log.info("Login Request ==> {}", request);
+        ApiResponse<Map<String, Object>> token = authService.loginUser(request);
+        return new ResponseEntity<>(token, status(token.getCode()));
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<ApiResponse<Map<String,Object>>> refreshAccessToken(@RequestHeader(name = "Authorization") String refreshToken){
-        ApiResponse<Map<String,Object>> response = authService.refreshToken(refreshToken);
-        return new ResponseEntity<>(response,status(response.getCode()));
+    public ResponseEntity<ApiResponse<Map<String, Object>>> refreshAccessToken(@RequestHeader(name = "Authorization") String refreshToken) {
+        ApiResponse<Map<String, Object>> response = authService.refreshToken(refreshToken);
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Map<String,Object>>> logout(@RequestHeader(name = "Authorization") String token){
-        ApiResponse<Map<String,Object>> response = authService.logout(token);
-        return new ResponseEntity<>(response,status(response.getCode()));
+    public ResponseEntity<ApiResponse<Map<String, Object>>> logout(@RequestHeader(name = "Authorization") String token) {
+        ApiResponse<Map<String, Object>> response = authService.logout(token);
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
 
 

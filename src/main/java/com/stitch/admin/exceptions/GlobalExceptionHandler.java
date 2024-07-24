@@ -29,65 +29,66 @@ import static com.stitch.admin.utils.Constants.status;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RegistrationException.class)
-    public ResponseEntity<ApiResponse<String>> handleRegistrationException(RegistrationException ex){
+    public ResponseEntity<ApiResponse<String>> handleRegistrationException(RegistrationException ex) {
         ApiResponse<String> errorDetails = new ApiResponse<>(FAILED, HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ApiResponse<String>> handleApiExceptions(ApiException ex){
+    public ResponseEntity<ApiResponse<String>> handleApiExceptions(ApiException ex) {
         ApiResponse<String> errorDetails = new ApiResponse<>(FAILED, ex.getCode(), ex.getMessage());
         return new ResponseEntity<>(errorDetails, status(ex.getCode()));
     }
 
     @ExceptionHandler(UserExistsException.class)
-    public ResponseEntity<ApiResponse<String>> handleUserExistsException(UserExistsException ex){
+    public ResponseEntity<ApiResponse<String>> handleUserExistsException(UserExistsException ex) {
         ApiResponse<String> errorDetails = new ApiResponse<>(FAILED, HttpStatus.CONFLICT.value(), ex.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handleResourceNotFoundException(ResourceNotFoundException ex){
+    public ResponseEntity<ApiResponse<String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
         ApiResponse<String> errorDetails = new ApiResponse<>(FAILED, HttpStatus.NOT_FOUND.value(), ex.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Map<String,String>>> handleInvalidMethodArgument(MethodArgumentNotValidException ex){
-        Map<String,String> errors = new HashMap<>();
-        log.error("Method arguments not valid ==> {}",ex.getMessage());
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleInvalidMethodArgument(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        log.error("Method arguments not valid ==> {}", ex.getMessage());
         ex.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName,errorMessage);
+            errors.put(fieldName, errorMessage);
         });
-        ApiResponse<Map<String,String>> errorDetails = new ApiResponse<>(FAILED, HttpStatus.BAD_REQUEST.value(), "Failed to validate request", errors);
+        ApiResponse<Map<String, String>> errorDetails = new ApiResponse<>(FAILED, HttpStatus.BAD_REQUEST.value(), "Failed to validate request", errors);
         return new ResponseEntity<>(errorDetails, status(errorDetails.getCode()));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiResponse<Map<String,String>>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put("parameterName", ex.getName());
         errors.put("parameterValue", Objects.isNull(ex.getValue()) ? "" : String.valueOf(ex.getValue()));
         errors.put("message", ex.getMessage());
-        ApiResponse<Map<String,String>> response = new ApiResponse<>(FAILED, HttpStatus.BAD_REQUEST.value(), "Argument Mismatch", errors);
+        ApiResponse<Map<String, String>> response = new ApiResponse<>(FAILED, HttpStatus.BAD_REQUEST.value(), "Argument Mismatch", errors);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponse<Map<String,String>>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put("Error Message", ex.getMessage());
-        ApiResponse<Map<String,String>> response = new ApiResponse<>(FAILED, HttpStatus.BAD_REQUEST.value(), "Missing Or incomplete payload", errors);
+        ApiResponse<Map<String, String>> response = new ApiResponse<>(FAILED, HttpStatus.BAD_REQUEST.value(), "Missing Or incomplete payload", errors);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotWritableException.class)
-    public ResponseEntity<ApiResponse<Map<String,String>>> handleHttpMessageNotWritable(HttpMessageNotWritableException ex) {
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleHttpMessageNotWritable(HttpMessageNotWritableException ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put("Error Message", ex.getMessage());
-        ApiResponse<Map<String,String>> response = new ApiResponse<>(FAILED, HttpStatus.BAD_REQUEST.value(), "Failed to Convert response", errors);
+        ApiResponse<Map<String, String>> response = new ApiResponse<>(FAILED, HttpStatus.BAD_REQUEST.value(), "Failed to Convert response", errors);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

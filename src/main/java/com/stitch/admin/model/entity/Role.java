@@ -16,7 +16,7 @@ import java.util.Set;
 @ToString
 @Table(name = "admin_role")
 @Audited
-public class Role extends BaseEntity{
+public class Role extends BaseEntity {
 
     private String name;
 
@@ -33,7 +33,7 @@ public class Role extends BaseEntity{
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Role role = (Role) o;

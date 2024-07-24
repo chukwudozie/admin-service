@@ -3,7 +3,7 @@ package com.stitch.admin.exceptions.custom;
 import lombok.Getter;
 
 @Getter
-public class ApiException extends RuntimeException{
+public class ApiException extends RuntimeException {
 
     final int code;
 

@@ -38,5 +38,4 @@ public abstract class BaseEntity {
     protected String modifiedBy;
 
 
-
 }

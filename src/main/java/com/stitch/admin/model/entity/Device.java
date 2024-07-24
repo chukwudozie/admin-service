@@ -29,7 +29,7 @@ public class Device extends BaseEntity {
     @Column(name = "os")
     private String os;
 
-    public Device(DeviceDto deviceDto){
+    public Device(DeviceDto deviceDto) {
         this.name = deviceDto.getName();
         this.model = deviceDto.getModel();
         this.os = deviceDto.getOs();

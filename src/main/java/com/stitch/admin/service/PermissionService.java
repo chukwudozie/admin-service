@@ -17,4 +17,6 @@ public interface PermissionService {
     Optional<Permission> createPermission(String permissionName);
 
     ApiResponse<List<Permission>> getAllPermissions(int page, int size, String sort);
+
+    ApiResponse<Void> revokeRolePermission(String role, String permission);
 }

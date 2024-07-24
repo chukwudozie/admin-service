@@ -18,14 +18,14 @@ public class PasswordResetController {
     private final PasswordResetService passwordService;
 
     @GetMapping("/send-password-notification")
-    public ResponseEntity<ApiResponse<?>> sendNotification(@RequestParam String email){
+    public ResponseEntity<ApiResponse<?>> sendNotification(@RequestParam String email) {
         ApiResponse<Void> response = passwordService.sendPasswordChangeNotification(email);
-        return new ResponseEntity<>(response,status(response.getCode()));
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @PutMapping("/reset-password")
-    public ResponseEntity<ApiResponse<?>> resetPassword(@RequestBody PasswordResetRequest request){
+    public ResponseEntity<ApiResponse<?>> resetPassword(@RequestBody PasswordResetRequest request) {
         ApiResponse<Void> response = passwordService.resetPassword(request);
-        return new ResponseEntity<>(response,status(response.getCode()));
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
 }

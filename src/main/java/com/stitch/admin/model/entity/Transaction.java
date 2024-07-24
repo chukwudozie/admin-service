@@ -7,6 +7,7 @@ import com.stitch.admin.model.enums.TransactionType;
 import lombok.*;
 
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 
 @Entity

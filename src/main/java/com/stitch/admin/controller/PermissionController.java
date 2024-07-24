@@ -27,24 +27,32 @@ public class PermissionController {
     @PreAuthorize("hasAuthority('PERM_ASSIGN_PERM')")
 
     public ResponseEntity<ApiResponse<Role>> assignRoles(@RequestParam(name = "role") String roleName,
-                                                         @RequestParam(name = "permissions") List<String> permissions){
+                                                         @RequestParam(name = "permissions") List<String> permissions) {
         ApiResponse<Role> response = permissionService.assignPermissionsToRole(roleName, permissions);
-        return new ResponseEntity<>(response,status(response.getCode()));
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @PostMapping("create-permission")
     @PreAuthorize("hasAuthority('PERM_CREATE_PERM')")
-    public ResponseEntity<ApiResponse<Map<String,String>>> createRole(@RequestBody List<String> permissions){
-        ApiResponse<Map<String,String>> response = permissionService.createNewPermissions(permissions);
-        return new ResponseEntity<>(response,status(response.getCode()));
+    public ResponseEntity<ApiResponse<Map<String, String>>> createRole(@RequestBody List<String> permissions) {
+        ApiResponse<Map<String, String>> response = permissionService.createNewPermissions(permissions);
+        return new ResponseEntity<>(response, status(response.getCode()));
+    }
+
+    @PatchMapping("revoke-user-role/{role}")
+    @PreAuthorize("hasAuthority('PERM_REVOKE_PERM')")
+    public ResponseEntity<ApiResponse<Void>> revokeRolePermission(@PathVariable String role, @RequestParam(required = false, defaultValue = "") String permission) {
+        ApiResponse<Void> response = permissionService.revokeRolePermission(role, permission);
+        return new ResponseEntity<>(response, status(response.getCode()));
+
     }
 
     @GetMapping("get-all-permissions")
     @PreAuthorize("hasAuthority('PERM_VIEW_PERMS')")
     public ResponseEntity<ApiResponse<List<Permission>>> getAllRoles(@RequestParam(defaultValue = "0") int page,
-                                                               @RequestParam(defaultValue = "10") int size,
-                                                               @RequestParam(defaultValue = "asc") String sort){
-        ApiResponse<List<Permission>> response = permissionService.getAllPermissions(page,size,sort);
-        return new ResponseEntity<>(response,status(response.getCode()));
+                                                                     @RequestParam(defaultValue = "10") int size,
+                                                                     @RequestParam(defaultValue = "asc") String sort) {
+        ApiResponse<List<Permission>> response = permissionService.getAllPermissions(page, size, sort);
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
 }

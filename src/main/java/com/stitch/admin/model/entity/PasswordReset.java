@@ -6,8 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
-import java.time.Instant;
-
 @Entity
 @Getter
 @Setter
@@ -28,12 +26,6 @@ public class PasswordReset extends BaseEntity {
 
     @Column(name = "reset_code")
     private String resetCode;
-
-//    @Column(name = "generated_on")
-//    private Instant generatedOn;
-
-//    @Column(name = "expired_on")
-//    private Instant expiredOn;
 
     @Column(name = "device_id")
     private String deviceId;
