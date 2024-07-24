@@ -6,6 +6,8 @@ import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
+import java.util.Objects;
+
 public class UserSpecification {
 
     public static Specification<UserEntity> hasRoleName(String roleName) {
@@ -18,10 +20,10 @@ public class UserSpecification {
         };
     }
 
-    public static Specification<UserEntity> isEnabled(Boolean enabled) {
+    public static Specification<UserEntity> isEnabled(String enabled) {
         return (root, query, criteriaBuilder) -> {
             if (enabled != null) {
-                return criteriaBuilder.equal(root.get("enabled"), enabled);
+                return criteriaBuilder.equal(root.get("enabled"), enabled(enabled));
             }
             return criteriaBuilder.conjunction();
         };
@@ -34,5 +36,11 @@ public class UserSpecification {
             }
             return criteriaBuilder.conjunction();
         };
+    }
+
+    private static boolean enabled(String enabled){
+        if(Objects.isNull(enabled) || enabled.trim().isEmpty())
+            return false;
+        return enabled.equals("true");
     }
 }

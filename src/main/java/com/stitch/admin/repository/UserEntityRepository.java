@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserEntityRepository extends JpaRepository<UserEntity, Long>, JpaSpecificationExecutor<UserEntity> {
@@ -16,6 +17,8 @@ public interface UserEntityRepository extends JpaRepository<UserEntity, Long>, J
 
     long countUserEntitiesByRole_NameIgnoreCase(String roleName);
     long countUserEntitiesByEnabledTrueAndRole_NameIgnoreCase(String roleName);
+
+    Optional<UserEntity> findByEmailAddressIgnoreCase(String email);
 
     List<UserEntity> findAllByEmailAddressIgnoreCase(String email, Pageable pageable);
     List<UserEntity> findAllByCountryIgnoreCase(String country, Pageable pageable);

@@ -10,4 +10,6 @@ public interface AdminDashboardService {
     ApiResponse<Map<String, Object>> getCount();
 
     ApiResponse<List<UserDto>> fetchUsers(int page, int size, String type, String enabled, String name);
+
+    ApiResponse<UserDto> retrieveUserByEmail(String email);
 }

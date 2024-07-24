@@ -44,4 +44,11 @@ public class AdminDashboardController {
         ApiResponse<List<UserDto>> response = dashboardService.fetchUsers(page, size, roleName,enabled,username);
         return new ResponseEntity<>(response,status(response.getCode()));
     }
+
+    @GetMapping("/get-user-by-email")
+    @PreAuthorize("hasAuthority('PERM_DEFAULT')")
+    public ResponseEntity<ApiResponse<UserDto>> retrieveUserByEmail(@RequestParam String email){
+        ApiResponse<UserDto> response = dashboardService.retrieveUserByEmail(email);
+        return new ResponseEntity<>(response,status(response.getCode()));
+    }
 }

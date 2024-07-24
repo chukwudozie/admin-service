@@ -1,5 +1,7 @@
 package com.stitch.admin.service.impl;
 
+import com.stitch.admin.exceptions.custom.ApiException;
+import com.stitch.admin.exceptions.custom.ResourceNotFoundException;
 import com.stitch.admin.model.dto.UserDto;
 import com.stitch.admin.model.entity.UserEntity;
 import com.stitch.admin.payload.response.ApiResponse;
@@ -67,7 +69,7 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
         try {
             Pageable pageable = PageRequest.of(page, size);
             Specification<UserEntity> spec = Specification.where(UserSpecification.hasRoleName(roleName))
-                    .and(UserSpecification.isEnabled(enabled(enabled)))
+                    .and(UserSpecification.isEnabled(enabled))
                     .and(UserSpecification.hasName(name));
             Page<UserEntity> userPage = userEntityRepository.findAll(spec, pageable);
             List<UserDto> userDtos = userPage.stream().map(this::convertToDto).collect(Collectors.toList());
@@ -79,15 +81,21 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
         }
     }
 
+    @Override
+    public ApiResponse<UserDto> retrieveUserByEmail(String email) {
+        if (Objects.isNull(email) || email.trim().isEmpty()){
+            throw new ApiException("User email cannot be empty or null ",400);
+        }
+        UserEntity existingUser = userEntityRepository.findByEmailAddressIgnoreCase(email)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("No user exists with email %s ",email)));
+        UserDto user = convertToDto(existingUser);
+        return new ApiResponse<>(SUCCESS,200,"User retrieved successfully", user);
+    }
+
     private UserDto convertToDto(UserEntity userEntity) {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userEntity,userDto);
         return userDto;
     }
 
-    private boolean enabled(String enabled){
-        if(Objects.isNull(enabled) || enabled.trim().isEmpty())
-            return false;
-        return enabled.equals("true");
-    }
 }
