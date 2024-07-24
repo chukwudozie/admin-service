@@ -23,7 +23,7 @@ public class Transaction extends BaseEntity {
     private String reference;
 
     @Column(name = "amount")
-    private BigDecimal amount;
+    private BigDecimal amount = BigDecimal.valueOf(0);
 
     @Column(name = "gateway_response")
     private String gatewayResponse;
@@ -85,6 +85,6 @@ public class Transaction extends BaseEntity {
     private TransactionStatus status;
 
     @Column(name = "transaction_type")
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 }

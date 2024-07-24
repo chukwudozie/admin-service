@@ -1,5 +1,6 @@
 package com.stitch.admin.controller;
 
+import com.stitch.admin.model.dto.TransactionDto;
 import com.stitch.admin.model.dto.UserDto;
 import com.stitch.admin.payload.response.ApiResponse;
 import com.stitch.admin.service.AdminDashboardService;
@@ -26,29 +27,61 @@ public class AdminDashboardController {
 
     private final AdminDashboardService dashboardService;
 
-    @GetMapping("/count")
+    @GetMapping("/count-users")
     @PreAuthorize("hasAuthority('PERM_DEFAULT')")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getDashboardCount(){
-        ApiResponse<Map<String,Object>> response = dashboardService.getCount();
-        return new ResponseEntity<>(response,status(response.getCode()));
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getDashboardUsersCount() {
+        ApiResponse<Map<String, Object>> response = dashboardService.getUsersCount();
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @GetMapping("/fetch-users")
     @PreAuthorize("hasAuthority('PERM_DEFAULT')")
     public ResponseEntity<ApiResponse<List<UserDto>>> fetchUsers(
             @RequestParam(defaultValue = "0", required = false) int page,
-       @RequestParam(defaultValue = "10", required = false) int size,
-        @RequestParam(required = false, defaultValue = "all")String roleName,
-        @RequestParam(required = false,defaultValue = "true")String enabled,
-         @RequestParam(required = false, defaultValue = "")String username){
-        ApiResponse<List<UserDto>> response = dashboardService.fetchUsers(page, size, roleName,enabled,username);
-        return new ResponseEntity<>(response,status(response.getCode()));
+            @RequestParam(defaultValue = "10", required = false) int size,
+            @RequestParam(required = false, defaultValue = "all") String roleName,
+            @RequestParam(required = false, defaultValue = "true") String enabled,
+            @RequestParam(required = false, defaultValue = "") String username) {
+        ApiResponse<List<UserDto>> response = dashboardService.fetchUsers(page, size, roleName, enabled, username);
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
 
     @GetMapping("/get-user-by-email")
     @PreAuthorize("hasAuthority('PERM_DEFAULT')")
-    public ResponseEntity<ApiResponse<UserDto>> retrieveUserByEmail(@RequestParam String email){
+    public ResponseEntity<ApiResponse<UserDto>> retrieveUserByEmail(@RequestParam String email) {
         ApiResponse<UserDto> response = dashboardService.retrieveUserByEmail(email);
-        return new ResponseEntity<>(response,status(response.getCode()));
+        return new ResponseEntity<>(response, status(response.getCode()));
     }
+
+    @GetMapping("/sum-transactions")
+    @PreAuthorize("hasAuthority('PERM_DEFAULT')")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> sumTransactionAmount(@RequestParam(required = false) String status,
+                                                                                 @RequestParam(required = false) String type,
+                                                                                 @RequestParam(required = false) String paymentMode,
+                                                                                 @RequestParam(required = false, defaultValue = "current_week") String dateFilter,
+                                                                                 @RequestParam(required = false) String startDate,
+                                                                                 @RequestParam(required = false) String endDate,
+                                                                                 @RequestParam(required = false) String monthYear) {
+        ApiResponse<Map<String, Object>> response = dashboardService.sumTransactionAmount(status, type, paymentMode, dateFilter, startDate, endDate, monthYear);
+        return new ResponseEntity<>(response, status(response.getCode()));
+    }
+
+
+    @GetMapping("/get-transactions")
+    @PreAuthorize("hasAuthority('PERM_DEFAULT')")
+    public ResponseEntity<ApiResponse<List<TransactionDto>>> getTransactions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String paymentMode,
+            @RequestParam(required = false, defaultValue = "current_week") String dateFilter,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String monthYear) {
+        ApiResponse<List<TransactionDto>> response = dashboardService.getTransactions(page, size, status, type, paymentMode, dateFilter, startDate, endDate, monthYear);
+        return new ResponseEntity<>(response, status(response.getCode()));
+    }
+
+
 }

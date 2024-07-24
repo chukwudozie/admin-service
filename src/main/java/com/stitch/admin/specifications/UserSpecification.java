@@ -1,4 +1,4 @@
-package com.stitch.admin.service.impl;
+package com.stitch.admin.specifications;
 
 import com.stitch.admin.model.entity.Role;
 import com.stitch.admin.model.entity.UserEntity;

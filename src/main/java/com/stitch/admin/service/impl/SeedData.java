@@ -1,15 +1,11 @@
 package com.stitch.admin.service.impl;
 
-import com.stitch.admin.model.entity.AdminUser;
-import com.stitch.admin.model.entity.Permission;
-import com.stitch.admin.model.entity.Role;
-import com.stitch.admin.model.entity.UserEntity;
+import com.stitch.admin.model.entity.*;
 import com.stitch.admin.model.enums.Permissions;
 import com.stitch.admin.model.enums.Roles;
-import com.stitch.admin.repository.AdminUserRepository;
-import com.stitch.admin.repository.PermissionRepository;
-import com.stitch.admin.repository.RoleRepository;
-import com.stitch.admin.repository.UserEntityRepository;
+import com.stitch.admin.model.enums.TransactionStatus;
+import com.stitch.admin.model.enums.TransactionType;
+import com.stitch.admin.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -25,15 +21,19 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.stitch.admin.model.enums.TransactionStatus.P;
+import static com.stitch.admin.model.enums.TransactionType.PAY_BILL;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class SeedUser implements CommandLineRunner {
+public class SeedData implements CommandLineRunner {
 
     private final AdminUserRepository adminUserRepository;
     private final UserEntityRepository userRepository;
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
+    private final TransactionRepository transactionRepository;
     private static final String email = "stitchAdmin@gmail.com";
     private final BCryptPasswordEncoder passwordEncoder;
     private static final String password = "P@sswd2024";
@@ -49,10 +49,27 @@ public class SeedUser implements CommandLineRunner {
 
         seedUsers();
 
+        seedTransactions();
+
 
     }
 
-    private void seedUsers() {
+    public void seedTransactions() {
+        if(transactionRepository.count() < 1){
+            for (int i = 0; i <4;i++){
+                Transaction transaction = new Transaction();
+                transaction.setTransactionId(UUID.randomUUID().toString());
+                transaction.setTransactionType(PAY_BILL);
+                transaction.setStatus(P);
+                transaction.setDescription("test transaction");
+                transaction.setDateCreated(Instant.now());
+                transactionRepository.save(transaction);
+            }
+        }
+    }
+
+    @Transactional
+    public void seedUsers() {
         createUser(CUSTOMER, CUSTOMER_PHONE);
         createUser(VENDOR, VENDOR_PHONE);
     }
