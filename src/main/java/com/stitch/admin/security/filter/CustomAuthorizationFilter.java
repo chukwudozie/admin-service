@@ -1,4 +1,4 @@
-package com.stitch.admin.config.filter;
+package com.stitch.admin.security.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
