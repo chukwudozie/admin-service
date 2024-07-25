@@ -1,7 +1,7 @@
 package com.stitch.admin.config;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import com.stitch.admin.config.filter.CustomAuthorizationFilter;
+import com.stitch.admin.security.filter.CustomAuthorizationFilter;
 import com.stitch.admin.service.impl.TokenBlacklistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
