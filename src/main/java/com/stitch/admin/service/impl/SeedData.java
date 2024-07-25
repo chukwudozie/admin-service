@@ -172,6 +172,8 @@ public class SeedData implements CommandLineRunner {
                     newRole.setPermissions(createdPermissions);
 
                 }
+                newRole.setCreatedBy(email);
+                newRole.setModifiedBy(email);
                 newRole = roleRepository.save(newRole);
                 userRoles.add(newRole);
                 roleNames.add(role);

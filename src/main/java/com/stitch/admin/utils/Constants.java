@@ -8,10 +8,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
+import static com.stitch.admin.model.enums.Permissions.*;
+
 @Slf4j
 public final class Constants {
 
@@ -59,12 +59,17 @@ public final class Constants {
         });
     }
 
+    public static final Set<String> DEFAULT_ADMIN_PERMISSIONS = Set.of(PERM_DEFAULT.name(), PERM_ACTIVATE_USER.name(),
+            PERM_DEACTIVATE_USER.name(),PERM_UPDATE_USER.name(),PERM_UPDATE_PSW.name());
+
     public static Optional<String> getLoggedInUser() {
         try {
             SecurityContext context = SecurityContextHolder.getContext();
             if(Objects.nonNull(context)){
                 Authentication authentication= context.getAuthentication();
-                return Optional.ofNullable(authentication.getName());
+                String loggedInUser = authentication.getName();
+                System.err.println("logged in user --> "+loggedInUser);
+                return Optional.ofNullable(loggedInUser);
             }
             return Optional.empty();
         }catch (Exception e){

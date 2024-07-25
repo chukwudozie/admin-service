@@ -80,6 +80,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
                                 userPerm = new HashSet<>();
                             userPerm.add(p);
                             r.setModifiedBy(loggedInUser);
+                            r.setCreatedBy(loggedInUser);
                             r.setLastUpdated(Instant.now());
                             roleRepository.save(r);
                         }
@@ -91,6 +92,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             adminUser.setRoles(userRoles);
             adminUser.setDateCreated(Instant.now());
             adminUser.setModifiedBy(loggedInUser);
+            adminUser.setCreatedBy(loggedInUser);
 
             AdminUser savedUser = adminUserRepository.save(adminUser);
             return new ApiResponse<>(SUCCESS,201,"User successfully created", savedUser);
